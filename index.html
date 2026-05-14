@@ -1,0 +1,2547 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEA Meter · บางละมุง</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--bg4:#242d40;
+  --b:rgba(255,255,255,0.08);--b2:rgba(255,255,255,0.15);
+  --t:#e8eaf0;--t2:#8b90a0;--t3:#555d70;
+  --blue:#4a9eff;--bluebg:rgba(74,158,255,0.12);
+  --green:#4ade80;--greenbg:rgba(74,222,128,0.10);
+  --amber:#fbbf24;--amberbg:rgba(251,191,36,0.10);
+  --red:#f87171;--redbg:rgba(248,113,113,0.10);
+  --teal:#2dd4bf;--purple:#a78bfa;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:14px}
+
+/* HEADER */
+.hd{background:var(--bg2);border-bottom:1px solid var(--b);padding:0 20px;display:flex;align-items:center;gap:12px;height:52px;position:sticky;top:0;z-index:100}
+.logo{font-size:13px;font-weight:600;color:var(--blue);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em}
+.hdiv{width:1px;height:18px;background:var(--b2)}
+.htitle{font-size:12px;color:var(--t2)}
+.hsp{flex:1}
+.sync{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+
+/* TABS */
+.nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--b);background:var(--bg2);overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.tab{padding:10px 16px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--t2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:.15s;flex-shrink:0}
+.tab:hover{color:var(--t)}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* MAIN */
+.main{padding:16px 20px;max-width:1300px;margin:0 auto}
+.pg{display:none}.pg.on{display:block}
+
+/* METRICS */
+.mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.met{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:12px 14px;border-left:3px solid var(--blue)}
+.met.g{border-left-color:var(--green)}.met.a{border-left-color:var(--amber)}.met.r{border-left-color:var(--red)}.met.t{border-left-color:var(--teal)}.met.p{border-left-color:var(--purple)}
+.ml{font-size:11px;color:var(--t2);margin-bottom:3px}
+.mv{font-size:26px;font-weight:600;font-family:'IBM Plex Mono',monospace;line-height:1;color:var(--blue)}
+.met.g .mv{color:var(--green)}.met.a .mv{color:var(--amber)}.met.r .mv{color:var(--red)}.met.t .mv{color:var(--teal)}.met.p .mv{color:var(--purple)}
+.ms{font-size:11px;color:var(--t3);margin-top:3px}
+
+/* SEARCH */
+.sw{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.si{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);padding:9px 12px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--t);outline:none}
+.si::placeholder{color:var(--t3)}.si:focus{border-color:var(--blue)}
+.fs{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);padding:9px 10px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--t);outline:none;cursor:pointer}
+.ri{font-size:11px;color:var(--t3);margin-bottom:8px}
+
+/* TABLE */
+.tw{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+thead th{background:var(--bg3);padding:9px 12px;text-align:left;font-size:11px;font-weight:500;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--b);white-space:nowrap;cursor:pointer;user-select:none}
+thead th:hover{color:var(--t)}
+.si2{opacity:.35;margin-left:3px;font-size:10px}
+th.on .si2{opacity:1;color:var(--blue)}
+tbody tr{border-bottom:1px solid var(--b);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg3)}
+tbody tr.print-selected{background:rgba(167,139,250,.18)!important;box-shadow:inset 3px 0 0 var(--purple)}
+tbody tr.print-selected:hover{background:rgba(167,139,250,.26)!important}
+tbody tr.print-selected td:first-child{color:var(--purple)!important}
+.print-col{width:44px;text-align:center}
+.queue-row-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--b2);background:transparent;color:var(--t3);cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;transition:.15s}
+.queue-row-btn:hover{background:var(--bg3);color:var(--t)}
+.queue-row-btn.on{background:rgba(167,139,250,.22);border-color:var(--purple);color:var(--purple)}
+td{padding:9px 12px;font-size:12px;vertical-align:top}
+.mono{font-family:'IBM Plex Mono',monospace;font-size:11px}
+
+/* NAME+ADDR cell */
+.cell-name{font-size:12px;color:var(--t);font-weight:500;line-height:1.4}
+.cell-addr{font-size:11px;color:var(--t3);margin-top:2px;line-height:1.4}
+
+/* BADGE */
+.badge{display:inline-block;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:500;white-space:nowrap}
+.bg{background:var(--greenbg);color:var(--green);border:1px solid rgba(74,222,128,.2)}
+.ba{background:var(--amberbg);color:var(--amber);border:1px solid rgba(251,191,36,.2)}
+.br{background:var(--redbg);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.bgr{background:rgba(255,255,255,.04);color:var(--t2);border:1px solid var(--b)}
+
+/* PAGINATION */
+.pgs{display:flex;align-items:center;gap:3px;padding:10px;border-top:1px solid var(--b);justify-content:center;flex-wrap:wrap}
+.pb{width:30px;height:30px;border-radius:var(--rs);background:transparent;border:1px solid var(--b);color:var(--t2);font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.1s}
+.pb:hover{background:var(--bg3);color:var(--t)}
+.pb.on{background:var(--bluebg);border-color:var(--blue);color:var(--blue)}
+.pb:disabled{opacity:.3;cursor:not-allowed}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center;padding:16px}
+.mo.on{display:flex}
+.mbox{background:var(--bg2);border:1px solid var(--b2);border-radius:14px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;padding:22px;animation:su .18s ease}
+@keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.mt{font-size:15px;font-weight:600;flex:1;padding-right:12px;line-height:1.4}
+.mc{background:var(--bg3);border:none;width:28px;height:28px;border-radius:50%;color:var(--t2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mc:hover{color:var(--t)}
+.msec{margin-bottom:14px}
+.msect{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mf{background:var(--bg3);border-radius:var(--rs);padding:9px 11px}
+.mfl{font-size:10px;color:var(--t3);margin-bottom:2px}
+.mfv{font-size:12px;color:var(--t)}
+.mfv.mono{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal)}
+.mfv.mru{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--amber);font-weight:500}
+.full{grid-column:1/-1}
+.glink{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:var(--bluebg);border:1px solid var(--blue);border-radius:var(--r);color:var(--blue);font-size:13px;text-decoration:none;font-weight:500;margin-top:4px}
+
+/* DAILY SUMMARY */
+.day-picker{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.day-picker label{font-size:12px;color:var(--t2)}
+.day-picker select{background:var(--bg2);border:1px solid var(--b2);border-radius:var(--rs);padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--t);outline:none;cursor:pointer}
+.week-toggle{display:flex;gap:1px;background:var(--bg3);border-radius:var(--rs);padding:3px}
+.wt{padding:5px 12px;border-radius:4px;font-size:12px;font-family:'IBM Plex Sans Thai',sans-serif;background:none;border:none;color:var(--t2);cursor:pointer;transition:.15s}
+.wt.on{background:var(--bg2);color:var(--blue);border:1px solid var(--b2)}
+.worker-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.wcard{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:14px}
+.wcard-name{font-size:13px;font-weight:500;margin-bottom:4px}
+.wcard-count{font-size:28px;font-weight:600;font-family:'IBM Plex Mono',monospace;color:var(--blue);line-height:1}
+.wcard-sub{font-size:11px;color:var(--t3);margin-top:3px}
+.type-pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.tpill{font-size:10px;padding:2px 6px;border-radius:99px;background:var(--bg3);color:var(--t2);border:1px solid var(--b)}
+
+/* PENDING */
+.pend-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.pend-filter{display:flex;gap:7px;flex-wrap:wrap}
+
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 20px;color:var(--t3);font-size:13px}
+
+/* HBAR */
+.cc{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:14px;margin-bottom:10px}
+.cct{font-size:11px;font-weight:500;color:var(--t2);margin-bottom:12px}
+.hb{display:flex;flex-direction:column;gap:7px}
+.hbr{display:flex;align-items:center;gap:8px}
+.hbl{font-size:11px;color:var(--t2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hbt{flex:1;background:var(--bg3);border-radius:99px;height:5px;overflow:hidden}
+.hbf{height:5px;border-radius:99px}
+.hbv{font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--t);min-width:30px;text-align:right}
+
+@media(max-width:640px){
+  .main{padding:12px}
+  .hd{padding:0 12px}
+  .nav{padding:0 12px}
+}
+
+/* MAP */
+.map-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.map-legend{display:flex;gap:12px;margin-left:8px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.map-count{font-size:11px;color:var(--t3);margin-left:auto}
+#mapEl{height:calc(100vh - 200px);min-height:500px;border-radius:var(--r);overflow:hidden;border:1px solid var(--b)}
+.leaflet-popup-content-wrapper{background:var(--bg2);border:1px solid var(--b2);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.5);padding:0}
+.leaflet-popup-content{margin:0;padding:0}
+.leaflet-popup-tip{background:var(--bg2)}
+.leaflet-popup-close-button{color:var(--t2)!important;font-size:16px!important;top:8px!important;right:8px!important}
+.map-popup{padding:14px 16px;min-width:240px;font-family:'IBM Plex Sans Thai',sans-serif}
+.mp-name{font-size:13px;font-weight:600;color:#e8eaf0;margin-bottom:6px;line-height:1.4;padding-right:16px}
+.mp-badges{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.mp-row{display:flex;gap:6px;margin-bottom:4px;font-size:11px}
+.mp-label{color:#555d70;width:80px;flex-shrink:0}
+.mp-val{color:#8b90a0}
+.mp-val.teal{color:#2dd4bf;font-family:'IBM Plex Mono',monospace}
+.mp-val.amber{color:#fbbf24;font-family:'IBM Plex Mono',monospace}
+.mp-gmap{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:8px;background:rgba(74,158,255,0.12);border:1px solid rgba(74,158,255,0.3);border-radius:6px;color:#4a9eff;font-size:12px;text-decoration:none;font-weight:500}
+
+
+@page { size: A4 portrait; margin: 8mm; }
+@media print {
+  body > *:not(#printArea) { display: none !important; }
+  #printArea { display: block !important; }
+}
+#printArea { display: none; }
+
+/* 4-up grid on A4 */
+.print-page {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 5mm;
+  height: 277mm;
+  box-sizing: border-box;
+}
+.print-page > div:empty {
+  border: none;
+}
+/* Single slip (A6 quarter) */
+.print-sheet {
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  color: #111;
+  font-size: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  padding: 5mm;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  page-break-inside: avoid;
+}
+.print-corner-label {
+  position: absolute; top: 3px; right: 5px;
+  font-size: 8px; color: #ccc; font-family: monospace;
+}
+.print-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  border-bottom: 1.5px solid #111;
+  padding-bottom: 5px; margin-bottom: 6px;
+}
+.print-logo { font-size: 8px; font-weight: 700; color: #1a56db; font-family: 'IBM Plex Mono', monospace; margin-bottom: 1px; }
+.print-title { font-size: 12px; font-weight: 700; margin: 2px 0 3px; line-height: 1.3; max-width: 130px; }
+.print-badges { display: flex; gap: 3px; flex-wrap: wrap; }
+.print-badge { padding: 1px 5px; border-radius: 99px; font-size: 8px; font-weight: 600; border: 1px solid; white-space: nowrap; }
+.print-badge.green { color: #166534; border-color: #166534; background: #dcfce7; }
+.print-badge.amber { color: #92400e; border-color: #d97706; background: #fef3c7; }
+.print-badge.gray  { color: #374151; border-color: #9ca3af; background: #f3f4f6; }
+.print-meta { text-align: right; font-size: 7.5px; color: #6b7280; flex-shrink: 0; padding-left: 4px; line-height: 1.5; }
+.print-mru {
+  background: #fffbeb; border: 1.5px solid #f59e0b;
+  border-radius: 4px; padding: 3px 6px; margin-bottom: 5px;
+  display: flex; align-items: center; gap: 6px;
+}
+.print-mru-label { font-size: 7.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #92400e; white-space: nowrap; }
+.print-mru-val { font-size: 12px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; color: #b45309; }
+.print-mru-item { flex: 1; min-width: 0; }
+.print-mru-item + .print-mru-item { border-left: 1px solid #fcd34d; padding-left: 6px; }
+.print-mru-item .print-mru-label { margin-bottom: 1px; }
+.print-mru-item.req .print-mru-val { color: #0f766e; }
+.print-sec { margin-bottom: 5px; }
+.print-sec-title { font-size: 7.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6b7280; border-bottom: 1px solid #e5e7eb; padding-bottom: 1px; margin-bottom: 4px; }
+.print-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.print-field { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 3px; padding: 3px 5px; }
+.print-field.full { grid-column: 1/-1; }
+.print-field-label { font-size: 7.5px; color: #9ca3af; margin-bottom: 1px; }
+.print-field-val { font-size: 10px; color: #111827; font-weight: 500; line-height: 1.3; }
+.print-field-val.mono { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #0f766e; }
+.print-footer {
+  margin-top: 4px; padding-top: 3px;
+  border-top: 1px solid #e5e7eb;
+  display: flex; justify-content: space-between;
+  font-size: 7.5px; color: #9ca3af;
+}
+
+/* UI buttons */
+.print-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 11px; margin-top: 10px;
+  background: rgba(74,158,255,0.08); border: 1px solid rgba(74,158,255,0.4);
+  border-radius: var(--r); color: var(--blue);
+  font-size: 13px; font-family: 'IBM Plex Sans Thai', sans-serif;
+  cursor: pointer; font-weight: 500; transition: background .15s;
+}
+.print-btn:hover { background: rgba(74,158,255,0.18); }
+.copy-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 11px; margin-top: 10px;
+  background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.4);
+  border-radius: var(--r); color: var(--teal);
+  font-size: 13px; font-family: 'IBM Plex Sans Thai', sans-serif;
+  cursor: pointer; font-weight: 500; transition: background .15s;
+}
+.copy-btn:hover { background: rgba(45,212,191,0.16); }
+.select-print-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 10px; margin-top: 6px;
+  background: rgba(161,139,250,0.1); border: 1px solid rgba(161,139,250,0.4);
+  border-radius: var(--r); color: #a78bfa;
+  font-size: 13px; font-family: 'IBM Plex Sans Thai', sans-serif;
+  cursor: pointer; font-weight: 500; transition: background .15s;
+}
+.select-print-btn:hover { background: rgba(161,139,250,0.18); }
+.select-print-btn.selected { background: rgba(161,139,250,0.25); border-color: #a78bfa; }
+
+/* Print queue bar */
+.print-queue-bar {
+  display: none;
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  background: var(--bg2); border: 1px solid var(--b2);
+  border-radius: 18px; padding: 10px 14px;
+  align-items: center; gap: 10px; flex-wrap: wrap;
+  max-width: min(760px, calc(100vw - 24px));
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  z-index: 300; font-size: 13px;
+}
+.pq-count { color: var(--blue); font-weight: 600; }
+.pq-label { color: var(--t2); }
+.pq-list {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  max-width: 420px;
+}
+.pq-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  max-width: 190px; padding: 4px 8px;
+  background: var(--bg3); border: 1px solid var(--b2);
+  border-radius: 99px; color: var(--t);
+  font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pq-chip b { color: var(--teal); font-weight: 500; }
+@media(max-width:640px){
+  .print-queue-bar { left: 12px; right: 12px; transform: none; justify-content: center; }
+  .pq-list { width: 100%; justify-content: center; max-width: none; }
+}.pq-print {
+  background: var(--blue); color: #fff; border: none;
+  padding: 7px 16px; border-radius: 99px; font-size: 13px;
+  font-family: 'IBM Plex Sans Thai', sans-serif; cursor: pointer; font-weight: 500;
+}
+.pq-clear {
+  background: none; border: none; color: var(--t3);
+  font-size: 13px; cursor: pointer; padding: 4px 8px;
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+}
+.pq-clear:hover { color: var(--t); }
+
+
+.zone-label { background:transparent!important; border:none!important; box-shadow:none!important; }
+.zone-label .leaflet-tooltip-content { background:transparent; }
+
+
+/* GUIDE PAGE */
+.guide-hero{
+  background:linear-gradient(135deg,rgba(74,158,255,.16),rgba(167,139,250,.10));
+  border:1px solid var(--b2);
+  border-radius:16px;
+  padding:22px;
+  margin-bottom:14px;
+}
+.guide-kicker{font-size:11px;color:var(--blue);font-family:'IBM Plex Mono',monospace;letter-spacing:.08em;margin-bottom:6px}
+.guide-title{font-size:24px;font-weight:600;margin-bottom:6px}
+.guide-desc{font-size:13px;color:var(--t2);line-height:1.8;max-width:780px}
+.guide-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:14px}
+.guide-card{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:16px}
+.guide-card h3{font-size:14px;margin-bottom:8px}
+.guide-card p,.guide-card li{font-size:12px;color:var(--t2);line-height:1.8}
+.guide-card ul{padding-left:18px}
+.guide-pill-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.guide-pill{font-size:11px;color:var(--blue);background:var(--bluebg);border:1px solid rgba(74,158,255,.25);padding:5px 9px;border-radius:99px}
+.guide-note{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.22);color:var(--amber);border-radius:var(--r);padding:13px 15px;font-size:12px;line-height:1.8}
+.pdf-panel{margin-bottom:14px}
+.pdf-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.pdf-title{font-size:14px;font-weight:600}
+.pdf-sub{font-size:12px;color:var(--t2);line-height:1.7;margin-top:4px}
+.pdf-upload{display:inline-flex;align-items:center;gap:7px;background:var(--blue);color:#fff;border:0;border-radius:var(--rs);padding:9px 13px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pdf-upload input{display:none}
+.pdf-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.pdf-item{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:12px}
+.pdf-name{font-size:13px;font-weight:600;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:5px}
+.pdf-meta{font-size:10px;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-bottom:10px}
+.pdf-actions{display:flex;gap:7px;flex-wrap:wrap}
+.pdf-btn{border:1px solid var(--b2);background:var(--bg2);color:var(--t);border-radius:var(--rs);padding:7px 10px;font-size:12px;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer}
+.pdf-btn.primary{background:var(--bluebg);border-color:rgba(74,158,255,.35);color:var(--blue)}
+.pdf-btn.danger{color:var(--red)}
+.pdf-empty{border:1px dashed var(--b2);border-radius:var(--r);padding:18px;color:var(--t3);font-size:12px;text-align:center}
+.pdf-viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:260;padding:18px}
+.pdf-viewer.on{display:flex;align-items:center;justify-content:center}
+.pdf-box{width:min(1100px,96vw);height:min(820px,92vh);background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.pdf-bar{height:48px;display:flex;align-items:center;gap:10px;padding:0 12px;border-bottom:1px solid var(--b);background:var(--bg3)}
+.pdf-bar-title{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdf-spacer{flex:1}
+.pdf-close{background:none;border:0;color:var(--t2);font-size:20px;cursor:pointer;padding:5px 9px}
+.pdf-frame{flex:1;width:100%;border:0;background:#111}
+@media(max-width:640px){.pdf-head{align-items:flex-start;flex-direction:column}.pdf-upload{width:100%;justify-content:center}.pdf-viewer{padding:8px}.pdf-box{height:94vh}}
+
+/* SEARCH HELP + SUMMARY */
+.help-box{background:linear-gradient(135deg,rgba(74,158,255,.12),rgba(45,212,191,.06));border:1px solid var(--b2);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.help-title{font-size:14px;font-weight:600;margin-bottom:5px}
+.help-desc{font-size:12px;color:var(--t2);line-height:1.75}
+.help-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.help-tag{font-size:11px;color:var(--blue);background:var(--bluebg);border:1px solid rgba(74,158,255,.24);border-radius:99px;padding:4px 8px}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:12px}
+.info-card{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:14px}
+.info-card h3{font-size:13px;margin-bottom:8px}
+.info-card ul{padding-left:18px}
+.info-card li{font-size:12px;color:var(--t2);line-height:1.7}
+.quick-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.qs-card{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:12px 14px;border-left:3px solid var(--blue)}
+.qs-card.g{border-left-color:var(--green)}.qs-card.a{border-left-color:var(--amber)}.qs-card.r{border-left-color:var(--red)}.qs-card.p{border-left-color:var(--purple)}
+.qs-label{font-size:11px;color:var(--t2);margin-bottom:4px}
+.qs-value{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:var(--t)}
+.qs-note{font-size:10px;color:var(--t3);margin-top:2px}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:14px}
+.mini-chart{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:14px}
+.mini-chart h3{font-size:13px;margin-bottom:10px;color:var(--t)}
+.chart-row{display:grid;grid-template-columns:88px 1fr 36px;align-items:center;gap:8px;margin:7px 0}
+.chart-label{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chart-track{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.chart-fill{height:100%;background:var(--blue);border-radius:99px}
+.chart-value{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);text-align:right}
+
+
+/* SAFE SUMMARY ADDON - no popup/search override */
+#monthPick,#dayPick{
+  min-width:180px;height:42px;background:var(--bg2);border:1px solid var(--b2);
+  border-radius:var(--rs);padding:8px 12px;color:var(--t);font-size:13px;
+  font-family:'IBM Plex Sans Thai',sans-serif;outline:none;cursor:pointer
+}
+#monthPick option,#dayPick option{background:#161b27;color:#e8eaf0}
+.summary-section-title{font-size:14px;font-weight:600;margin:18px 0 10px;color:var(--t)}
+.summary-alert{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.22);border-radius:var(--r);padding:12px 14px;color:var(--amber);font-size:12px;line-height:1.7;margin-bottom:12px}
+.summary-job-table tbody tr{cursor:pointer}
+@media(max-width:640px){#monthPick,#dayPick{width:100%;min-width:100%}}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+</head>
+<body>
+
+<div id="printArea"></div>
+<div class="print-queue-bar" id="pqBar">
+  <span class="pq-count" id="pqCount">0</span>
+  <span class="pq-label">งานที่เลือก</span>
+  <div class="pq-list" id="pqList"></div>
+  <button class="pq-print" onclick="printQueue()">🖨️ พิมพ์ทั้งหมด</button>
+  <button class="pq-clear" onclick="clearQueue()">✕ ล้าง</button>
+</div>
+<div class="hd">
+  <span class="logo">⚡ PEA METER</span>
+  <div class="hdiv"></div>
+  <span class="htitle">บางละมุง · ชลบุรี</span>
+  <div class="hsp"></div>
+  <div class="sync"><div class="dot" id="syncDot"></div><span id="syncLbl">กำลังโหลด...</span></div>
+</div>
+
+<div class="nav">
+  <button class="tab on" onclick="showPg('search',this)">🔍 ค้นหางาน</button>
+  <button class="tab" onclick="showPg('ami',this)">⚡ เลิกใช้ปกติ</button>
+  <button class="tab" onclick="showPg('guide',this)">📘 คู่มือ</button>
+  <button class="tab" onclick="showPg('pending',this)">⏳ งานค้าง</button>
+  <button class="tab" onclick="showPg('daily',this)">📊 สรุป</button>
+  <button class="tab" onclick="showPg('map',this);initMap()">🗺️ แผนที่</button>
+  <button class="tab" id="settingsTab" onclick="askPassword(this)" style="color:var(--t3)">⚙️</button>
+</div>
+
+<div class="main">
+
+
+<!-- ══ GUIDE PAGE ══ -->
+<div class="pg" id="pg-guide">
+  <div class="guide-hero">
+    <div class="guide-kicker">PEA METER GUIDE</div>
+    <div class="guide-title">คู่มือการดูข้อมูลงานจ่ายมิเตอร์</div>
+    <div class="guide-desc">
+      เว็บนี้ใช้สำหรับดูข้อมูลงานจ่ายมิเตอร์ของพื้นที่บางละมุง ช่วยให้พนักงานติดตามงานได้ง่ายขึ้น
+      และช่วยให้ผู้ใช้ไฟเข้าใจสถานะ ประเภทงาน และขั้นตอนที่เกี่ยวข้องกับงานมิเตอร์
+    </div>
+  </div>
+
+  <div class="guide-grid">
+    <div class="guide-card">
+      <h3>👤 สำหรับผู้ใช้ไฟ</h3>
+      <ul>
+        <li>ค้นหางานจากเลขคำร้อง ชื่อ ที่อยู่ หรือเลขมิเตอร์</li>
+        <li>ดูสถานะว่างานรอดำเนินการหรือปิดงานแล้ว</li>
+        <li>ทำความเข้าใจประเภทงาน เช่น ติดตั้งใหม่ เพิ่มขนาด TOU</li>
+        <li>ดูตำแหน่งงานโดยรวมผ่านหน้าแผนที่</li>
+      </ul>
+    </div>
+
+    <div class="guide-card">
+      <h3>👷 สำหรับพนักงาน</h3>
+      <ul>
+        <li>ตรวจสอบรายการงานค้าง</li>
+        <li>ดูสรุปงานรายวันหรือรายสัปดาห์</li>
+        <li>กรองงานตามผู้ปฏิบัติงาน ประเภทงาน และ Zone</li>
+        <li>ใช้แผนที่ช่วยวางแผนพื้นที่ปฏิบัติงาน</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guide-grid">
+    <div class="guide-card">
+      <h3>🔎 ค้นหาได้จากอะไรบ้าง</h3>
+      <p>สามารถค้นหาข้อมูลงานได้จากคำสำคัญหลายแบบ</p>
+      <div class="guide-pill-row">
+        <span class="guide-pill">เลขคำร้อง</span>
+        <span class="guide-pill">ชื่อผู้ใช้ไฟ</span>
+        <span class="guide-pill">เลขมิเตอร์ PEA</span>
+        <span class="guide-pill">ที่อยู่</span>
+        <span class="guide-pill">MRU</span>
+        <span class="guide-pill">ผู้ปฏิบัติงาน</span>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <h3>🏷️ ประเภทงานที่พบในระบบ</h3>
+      <ul>
+        <li><b>ติดตั้งใหม่</b> งานขอใช้ไฟและติดตั้งมิเตอร์ครั้งแรก</li>
+        <li><b>เพิ่มขนาด</b> งานเปลี่ยนขนาดมิเตอร์ให้รองรับการใช้ไฟมากขึ้น</li>
+        <li><b>เปลี่ยนประเภท</b> งานเปลี่ยนประเภทการใช้ไฟตามลักษณะการใช้งาน</li>
+        <li><b>TOU</b> งานมิเตอร์อัตราตามช่วงเวลาการใช้ไฟ</li>
+        <li><b>ต่อกลับ</b> งานต่อไฟกลับหลังจากถูกงดจ่ายหรือถอดมิเตอร์</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guide-grid">
+    <div class="guide-card">
+      <h3>📌 ความหมายสถานะงาน</h3>
+      <ul>
+        <li><b>รอดำเนินการ</b> งานที่ยังอยู่ระหว่างตรวจสอบ รอติดตั้ง หรือรอบันทึกผล</li>
+        <li><b>ปิดงาน</b> งานที่ดำเนินการเสร็จและบันทึกผลเรียบร้อยแล้ว</li>
+      </ul>
+    </div>
+
+    <div class="guide-card">
+      <h3>🧭 เมนูหลักในระบบ</h3>
+      <ul>
+        <li><b>ค้นหางาน</b> ค้นหาและดูรายละเอียดงานแต่ละรายการ</li>
+        <li><b>งานค้าง</b> ดูงานที่ยังรอดำเนินการ</li>
+        <li><b>สรุปรายวัน</b> ดูภาพรวมงานตามวันที่</li>
+        <li><b>แผนที่</b> ดูตำแหน่งงานตามพื้นที่</li>
+        <li><b>Dashboard</b> ดูภาพรวมจำนวนงาน</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guide-note">
+    หมายเหตุ: หน้านี้เป็นคู่มือการใช้งานและคำอธิบายระบบเท่านั้น ไม่ได้แก้ไขข้อมูลใน Google Sheet
+    ข้อมูลจริงยังมาจากแหล่งข้อมูลที่ตั้งค่าไว้ในระบบเดิม
+  </div>
+
+  <div class="guide-card pdf-panel">
+    <div class="pdf-head">
+      <div>
+        <div class="pdf-title">📄 คู่มือ PDF จากภายนอก</div>
+        <div class="pdf-sub">เพิ่มไฟล์ PDF จากเครื่อง แล้วเปิดอ่านในเว็บได้ทันที ระบบรับเฉพาะไฟล์ .pdf เท่านั้น</div>
+      </div>
+      <label class="pdf-upload">
+        ＋ เพิ่ม PDF
+        <input id="guidePdfInput" type="file" accept="application/pdf,.pdf" multiple onchange="importGuidePdfs(this.files);this.value=''">
+      </label>
+    </div>
+    <div id="guidePdfList" class="pdf-list">
+      <div class="pdf-empty">ยังไม่มีไฟล์ PDF ในคู่มือ</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEARCH PAGE ══ -->
+<div class="pg on" id="pg-search">
+  <div class="mets" id="mets"></div>
+  <div id="searchInsights"></div>
+  <div class="help-box">
+    <div class="help-title">🔍 ค้นหางานจ่ายมิเตอร์</div>
+    <div class="help-desc">ใช้หน้านี้เพื่อตรวจสอบรายการงานจ่ายมิเตอร์ ดูสถานะ ประเภทงาน พื้นที่ Zone และรายละเอียดผู้ใช้ไฟ กดที่รายการในตารางเพื่อดูข้อมูลเพิ่มเติมหรือพิมพ์ใบงาน</div>
+    <div class="help-tags">
+      <span class="help-tag">เลขคำร้อง</span><span class="help-tag">ชื่อผู้ใช้ไฟ</span><span class="help-tag">เลขมิเตอร์ PEA</span><span class="help-tag">ที่อยู่</span><span class="help-tag">MRU</span><span class="help-tag">ผู้ปฏิบัติงาน</span>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>🏷️ ประเภทงานที่พบบ่อย</h3>
+      <ul>
+        <li><b>ติดตั้งใหม่</b> ขอใช้ไฟและติดตั้งมิเตอร์ครั้งแรก</li>
+        <li><b>เพิ่มขนาด</b> เปลี่ยนขนาดมิเตอร์ให้รองรับโหลดมากขึ้น</li>
+        <li><b>เปลี่ยนประเภท</b> เปลี่ยนลักษณะการใช้ไฟตามการใช้งาน</li>
+        <li><b>TOU</b> มิเตอร์อัตราตามช่วงเวลาการใช้ไฟ</li>
+        <li><b>ต่อกลับ</b> ต่อไฟกลับหลังจากถูกงดจ่ายหรือถอดมิเตอร์</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>📌 ความหมายสถานะงาน</h3>
+      <ul>
+        <li><b>รอดำเนินการ</b> งานที่ยังอยู่ระหว่างตรวจสอบ รอติดตั้ง หรือรอบันทึกผล</li>
+        <li><b>ปิดงาน</b> งานที่ดำเนินการเสร็จและบันทึกผลเรียบร้อยแล้ว</li>
+        <li><b>ไม่มีพิกัด</b> รายการที่ยังไม่มี Latitude/Longitude สำหรับแสดงบนแผนที่</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sw">
+    <input class="si" id="qi" type="text" placeholder="ค้นหา: คำร้อง, ชื่อ, เลขมิเตอร์ PEA, ที่อยู่, MRU, ผู้ปฏิบัติงาน..." oninput="doSearch()">
+    <select class="fs" id="ft" onchange="doSearch()">
+      <option value="">ทุกประเภทงาน</option>
+      <option>ติดตั้งใหม่</option><option>เพิ่มขนาด</option>
+      <option>เปลี่ยนประเภท</option><option>TOU</option><option>ต่อกลับ</option>
+    </select>
+    <select class="fs" id="fst" onchange="doSearch()">
+      <option value="">ทุกสถานะ</option>
+      <option value="ปิด">ปิดงาน</option>
+      <option value="รอ">รอดำเนินการ</option>
+    </select>
+    <select class="fs" id="fz" onchange="doSearch()">
+      <option value="">ทุก Zone</option>
+      <option value="1">Zone 1</option><option value="2">Zone 2</option>
+    </select>
+    <select class="fs" id="ff" onchange="doSearch()">
+      <option value="">ตัวกรองงาน</option>
+      <option value="noCoord">ไม่มีพิกัด</option>
+      <option value="hasRemark">มีหมายเหตุ</option>
+      <option value="hasReq">มีเลขคำร้อง</option>
+      <option value="noReq">ไม่มีเลขคำร้อง</option>
+      <option value="debt">ค้างจ่าย</option>
+    </select>
+  </div>
+  <div class="ri" id="ri"></div>
+  <div class="tw" id="tw"></div>
+</div>
+
+<!-- ══ NORMAL DISCONNECT PAGE ══ -->
+<div class="pg" id="pg-ami">
+  <div class="mets" id="amiMets"></div>
+  <div class="help-box">
+    <div class="help-title">⚡ เลิกใช้ปกติ</div>
+    <div class="help-desc">ข้อมูลจาก Google Sheet แท็บ AMI และจานหมุน แสดงแยกจากงานจ่ายมิเตอร์หลัก</div>
+    <div class="help-tags">
+      <span class="help-tag">HPTY</span><span class="help-tag">เลขหลัง 6 ตัว</span><span class="help-tag">PEA</span><span class="help-tag">เลขคำร้อง</span><span class="help-tag">เลข INST</span><span class="help-tag">ผู้ปฏิบัติงาน</span>
+    </div>
+  </div>
+  <div class="sw">
+    <input class="si" id="amiQi" type="text" placeholder="ค้นหา: HPTY, เลขหลัง 6 ตัว, PEA, คำร้อง, INST, ผู้ปฏิบัติงาน..." oninput="renderAmi()">
+    <select class="fs" id="amiSource" onchange="renderAmi()">
+      <option value="">ทุกแหล่งข้อมูล</option>
+    </select>
+    <select class="fs" id="amiWorker" onchange="renderAmi()">
+      <option value="">ทุกผู้ปฏิบัติ</option>
+    </select>
+    <select class="fs" id="amiDateRange" onchange="renderAmi()">
+      <option value="">ทุกช่วงวันที่</option>
+      <option value="today">วันนี้</option>
+      <option value="7d">7 วันล่าสุด</option>
+      <option value="30d">30 วันล่าสุด</option>
+      <option value="month">เดือนนี้</option>
+    </select>
+    <select class="fs" id="amiSt" onchange="renderAmi()">
+      <option value="">ทุกสถานะ</option>
+      <option value="รอ">รอดำเนินการ</option>
+      <option value="ปิด">ปิดงาน</option>
+    </select>
+  </div>
+  <div class="ri" id="amiRi"></div>
+  <div class="tw" id="amiTw"></div>
+</div>
+
+<!-- ══ PENDING PAGE ══ -->
+<div class="pg" id="pg-pending">
+  <div class="mets" id="pmets"></div>
+  <div class="pend-header">
+    <span style="font-size:13px;color:var(--t2)">กรองตาม:</span>
+    <div class="pend-filter">
+      <select class="fs" id="pw" onchange="renderPending()">
+        <option value="">ทุกผู้ปฏิบัติ</option>
+      </select>
+      <select class="fs" id="ptype" onchange="renderPending()">
+        <option value="">ทุกประเภท</option>
+        <option>ติดตั้งใหม่</option><option>เพิ่มขนาด</option><option>เปลี่ยนประเภท</option>
+      </select>
+    </div>
+  </div>
+  <div class="tw" id="ptw"></div>
+</div>
+
+<!-- ══ DAILY PAGE ══ -->
+<div class="pg" id="pg-daily">
+  <div class="help-box">
+    <div class="help-title">📊 สรุปงานจ่ายมิเตอร์</div>
+    <div class="help-desc">รวมสรุปรายวันและรายเดือนไว้หน้าเดียว เพื่อดูภาพรวมงาน ปิดงาน งานค้าง ประเภทงาน Zone และผู้ปฏิบัติงาน โดยยังใช้ข้อมูลชุดเดียวกับหน้าค้นหางาน</div>
+  </div>
+
+  <div class="guide-grid">
+    <div class="guide-card">
+      <h3>📅 สรุปรายวัน</h3>
+      <div class="day-picker" style="margin-bottom:0">
+        <label>เลือกวันที่:</label>
+        <select id="dayPick" onchange="renderSummaryDaily()"></select>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <h3>📆 สรุปรายเดือน</h3>
+      <div class="day-picker" style="margin-bottom:0">
+        <label>เลือกเดือน:</label>
+        <select id="monthPick" onchange="renderSummaryMonthly()"></select>
+      </div>
+    </div>
+  </div>
+
+  <div id="summaryMonthly"></div>
+  <div id="summaryDaily"></div>
+</div>
+
+<!-- ══ DASHBOARD PAGE ══ -->
+<div class="pg" id="pg-dash">
+  <div class="help-box">
+    <div class="help-title">📈 Dashboard รวม</div>
+    <div class="help-desc">สรุปภาพรวมจากหน้างานหลักและหน้าเลิกใช้ปกติ แยกกราฟเป็นคนละชุดเพื่อเทียบจำนวน งานค้าง สถานะ ผู้ปฏิบัติงาน และแหล่งข้อมูลได้ในหน้าเดียว</div>
+  </div>
+  <div class="mets" id="dmets"></div>
+  <div id="dcharts"></div>
+</div>
+
+
+<!-- ══ MAP PAGE ══ -->
+<div class="pg" id="pg-map">
+  <div class="map-toolbar">
+    <select class="fs" id="mfst" onchange="filterMap()">
+      <option value="">ทุกสถานะ</option>
+      <option value="ปิด">ปิดงาน</option>
+      <option value="รอ">รอดำเนินการ</option>
+    </select>
+    <select class="fs" id="mftype" onchange="filterMap()">
+      <option value="">ทุกประเภทงาน</option>
+      <option>ติดตั้งใหม่</option>
+      <option>เพิ่มขนาด</option>
+      <option>เปลี่ยนประเภท</option>
+      <option>TOU</option>
+    </select>
+    <select class="fs" id="mfzone" onchange="filterMap()">
+      <option value="">ทุก Zone</option>
+      <option value="1">Zone 1</option>
+      <option value="2">Zone 2</option>
+    </select>
+    <div class="map-legend">
+      <span style="font-size:11px;color:var(--t3);margin-right:4px">Zone:</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#60a5fa;border:2px solid #4ade80"></span>Z1</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#c084fc;border:2px solid #4ade80"></span>Z2</span>
+      <span style="font-size:11px;color:var(--t3);margin:0 4px 0 10px">วงแหวน:</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--bg3);border:2px solid #4ade80"></span>ปิดงาน</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--bg3);border:2px solid #fbbf24"></span>รอ</span>
+    </div>
+    <div class="map-count" id="mapCount"></div>
+  </div>
+  <div id="mapEl"></div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="pg" id="pg-settings">
+  <div style="max-width:580px;display:flex;flex-direction:column;gap:14px">
+
+    <div style="background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:20px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px">🔗 Auto-sync จาก Google Sheet</div>
+      <div style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.7">วาง URL ที่ได้จาก Apps Script แล้วกด บันทึก — ระบบจะดึงข้อมูลสดทุกครั้งที่เปิดเว็บ</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input class="si" id="apiInp" type="text" placeholder="https://script.google.com/macros/s/…/exec" style="flex:1;min-width:0">
+        <button onclick="saveUrl()" style="background:var(--bluebg);border:1px solid var(--blue);border-radius:var(--rs);padding:9px 16px;color:var(--blue);font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap;font-weight:500">บันทึก</button>
+      </div>
+      <div id="apiMsg" style="font-size:12px;color:var(--t3);min-height:18px"></div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:20px">
+      <div style="font-size:14px;font-weight:600;margin-bottom:14px">📋 วิธีติดตั้ง (ทำครั้งเดียว 5 ขั้นตอน)</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--t2)">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--bluebg);border:1px solid var(--blue);color:var(--blue);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;margin-top:1px">1</span>
+          <span>เปิด Google Sheet → เมนูบน <strong style="color:var(--t)">ส่วนขยาย</strong> → <strong style="color:var(--t)">Apps Script</strong></span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--bluebg);border:1px solid var(--blue);color:var(--blue);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;margin-top:1px">2</span>
+          <span>ลบโค้ดเดิมทิ้ง → วางโค้ดจากไฟล์ <strong style="color:var(--t)">Code.gs</strong> ที่ได้รับ → กด 💾 บันทึก</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--bluebg);border:1px solid var(--blue);color:var(--blue);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;margin-top:1px">3</span>
+          <span>กด <strong style="color:var(--t)">Deploy</strong> → <strong style="color:var(--t)">New deployment</strong> → ประเภท <strong style="color:var(--t)">Web app</strong></span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--bluebg);border:1px solid var(--blue);color:var(--blue);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;margin-top:1px">4</span>
+          <span>ตั้งค่า Execute as: <strong style="color:var(--t)">Me</strong> · Who has access: <strong style="color:var(--t)">Anyone</strong> → กด <strong style="color:var(--t)">Deploy</strong> → อนุญาต permission</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="width:22px;height:22px;border-radius:50%;background:var(--bluebg);border:1px solid var(--blue);color:var(--blue);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace;margin-top:1px">5</span>
+          <span>คัดลอก <strong style="color:var(--t)">Web app URL</strong> → วางในช่องด้านบน → กด บันทึก</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:16px;font-size:12px;color:var(--t2);line-height:1.9">
+      <strong style="color:var(--t)">หมายเหตุ</strong><br>
+      • URL จะบันทึกใน browser นี้ ไม่ต้องตั้งค่าซ้ำ<br>
+      • เว็บนี้ใช้ข้อมูลสดจาก Google Sheet เท่านั้น ไม่มีข้อมูลเก่าฝังในไฟล์<br>
+      • ถ้าอัปเดต Apps Script ต้อง Deploy เวอร์ชันใหม่ทุกครั้ง
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="mo" id="mo" onclick="closeMo(event)">
+  <div class="mbox" id="mbox"></div>
+</div>
+<div class="pdf-viewer" id="pdfViewer" onclick="closeGuidePdf(event)">
+  <div class="pdf-box" onclick="event.stopPropagation()">
+    <div class="pdf-bar">
+      <div class="pdf-bar-title" id="pdfViewerTitle">คู่มือ PDF</div>
+      <div class="pdf-spacer"></div>
+      <a class="pdf-btn primary" id="pdfViewerOpen" href="#" target="_blank" rel="noopener">เปิดแท็บใหม่</a>
+      <button class="pdf-close" onclick="closeGuidePdf()">✕</button>
+    </div>
+    <iframe class="pdf-frame" id="pdfFrame" title="PDF viewer"></iframe>
+  </div>
+</div>
+
+<script>
+// cols: 0=seq,1=date,2=worker,3=type,4=newPea,5=size,6=model,7=oldPea,8=zone,9=lat,10=lng,11=status,12=remark,13=name,14=addr,15=phone,16=mru
+var RAW = [];
+var AMI_ROWS = [];
+const DEFAULT_APPS_URL = 'https://script.google.com/macros/s/AKfycbzAeSwH7slRk9kZi63lk4KRWOq4qmwqQoVcfdR4ZYAoObVGreEjl_EENmBxlVDcGGqI/exec';
+var APPS_URL = localStorage.getItem('pea_api_url') || DEFAULT_APPS_URL;
+const AMI_SHEET_ID = '1JSylUaOrnG2kOPA49aRgZM0Ub2rW5mmp90G1rSqJPB4';
+const AMI_SHEET_NAME = 'AMI';
+const ROTARY_SHEET_NAME = 'จานหมุน';
+// 0=seq,1=date,2=worker,3=type,4=newPea,5=size,6=model,7=oldPea,8=zone,9=lat,10=lng,11=status,12=remark,13=name,14=addr,15=phone,16=mru
+
+const MONTH = {'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,'เม.ย.':4,'พ.ค.':5,'มิ.ย.':6,'ก.ค.':7,'ส.ค.':8,'ก.ย.':9,'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12};
+const MONTH_LABELS = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+
+function g(r,i){return(r&&r[i]!=null)?String(r[i]).trim():'';}
+function zoneVal(r){const z=g(r,8);return z==='1'||z==='2'?z:'ไม่ระบุ';}
+function cleanZones(rows){
+  (rows||[]).forEach(function(r){
+    if(r)r[8]=zoneVal(r);
+  });
+  return rows||[];
+}
+function dedupeRows(rows){
+  var byKey={}, order=[];
+  (rows||[]).forEach(function(r){
+    if(!r) return;
+    var seq=g(r,0);
+    var hasData=(r||[]).some(function(v){return String(v||'').trim();});
+    if(!hasData) return;
+    var key=seq ? 'seq:'+seq : 'row:'+JSON.stringify(r);
+    if(!byKey[key]) order.push(key);
+    byKey[key]=r;
+  });
+  return order.map(function(k){return byKey[k];});
+}
+function prepareRows(rows){
+  return cleanZones(dedupeRows(rows));
+}
+function cellText(c){
+  return c ? String(c.f != null ? c.f : (c.v != null ? c.v : '')).trim() : '';
+}
+function gvizSheetRows(sheetId, sheetName, range){
+  return new Promise(function(resolve,reject){
+    var cb='peaGvizCb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    var sc=document.createElement('script');
+    var done=function(){delete window[cb];sc.remove();};
+    window[cb]=function(res){
+      try{
+        if(!res||res.status!=='ok'||!res.table) throw new Error('โหลดชีต '+sheetName+' ไม่ได้');
+        var rows=(res.table.rows||[]).map(function(row){
+          return (row.c||[]).map(cellText);
+        });
+        done();resolve(rows);
+      }catch(e){done();reject(e);}
+    };
+    sc.onerror=function(){done();reject(new Error('โหลดชีต '+sheetName+' ไม่ได้'));};
+    sc.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(sheetName)+'&range='+encodeURIComponent(range)+'&_='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+function amiStatus(r){
+  var text=[r[13],r[14],r[15],r[16],r[18],r[19]].join(' ');
+  if(text.indexOf('ปิด')>=0||text.indexOf('BILLING')>=0||text.indexOf('บส')>=0) return 'ปิดงาน';
+  if(text.indexOf('เปิดใบงานแล้ว')>=0) return 'เปิดใบงานแล้ว';
+  if(text.indexOf('ยังไม่ได้เปิดใบงาน')>=0||text.indexOf('รอเปิด')>=0) return 'รอเปิดใบงาน';
+  if(text.indexOf('รอ')>=0) return 'รอดำเนินการ';
+  return 'รอดำเนินการ';
+}
+function mapDisconnectRows(rows, sourceName){
+  var isRotary=sourceName==='จานหมุน';
+  var dateIdx=isRotary?10:11;
+  var workerIdx=isRotary?9:10;
+  var requestIdx=isRotary?6:7;
+  var instIdx=isRotary?8:9;
+  var displayNameIdx=isRotary?20:10;
+  var addressIdx=isRotary?21:-1;
+  return (rows||[]).slice(1).filter(function(r){
+    return r && (r[0]||r[1]||r[3]);
+  }).map(function(r){
+    var remark=[r[13],r[14],r[15],r[16],r[18],r[19]].filter(Boolean).join(' | ');
+    return [
+      sourceName+'-'+(r[0]||''),
+      r[dateIdx]||'',
+      r[workerIdx]||'ไม่ระบุ',
+      'เลิกใช้ปกติ',
+      r[3]||'',
+      r[4]||'',
+      r[5]||'',
+      r[instIdx]||'',
+      sourceName,
+      '',
+      '',
+      amiStatus(r),
+      remark,
+      r[displayNameIdx]||r[workerIdx]||'',
+      addressIdx>=0 ? (r[addressIdx]||'') : '',
+      '',
+      r[1]||'',
+      r[requestIdx]||'',
+      r[2]||''
+    ];
+  });
+}
+async function loadAmiRows(){
+  try{
+    var ami=mapDisconnectRows(await gvizSheetRows(AMI_SHEET_ID, AMI_SHEET_NAME, 'A:V'), 'AMI');
+    var rotary=mapDisconnectRows(await gvizSheetRows(AMI_SHEET_ID, ROTARY_SHEET_NAME, 'A:V'), 'จานหมุน');
+    return ami.concat(rotary);
+  }catch(e){
+    console.warn('Disconnect sync skipped:', e.message);
+    return [];
+  }
+}
+function parseDate(s){
+  try{
+    s=String(s||'').trim();
+    const p=s.split(' ');
+    if(MONTH[p[1]]) return {y:+p[2],m:MONTH[p[1]]||0,d:+p[0]};
+    const dt=new Date(s);
+    if(!isNaN(dt)) return {y:dt.getFullYear()%100,m:dt.getMonth()+1,d:dt.getDate()};
+  }catch(e){}
+  return{y:0,m:0,d:0};
+}
+function fmtDate(s){
+  const {y,m,d}=parseDate(s);
+  return d&&m ? String(d).padStart(2,'0')+' '+MONTH_LABELS[m]+' '+String(y).padStart(2,'0') : (s||'—');
+}
+
+const GUIDE_PDF_DB='pea_meter_guide_pdf_db';
+const GUIDE_PDF_STORE='pdfs';
+const MANUALS_SHEET_ID='1s7BREBNBUUTiaHfDddvtkLpTED1gRbYIhJkuyUBmPfc';
+const MANUALS_SHEET_NAME='PDF Manuals';
+const DEFAULT_MANUALS_UPLOAD_URL='https://script.google.com/macros/s/AKfycbxXRai0w2Ef5iR4bWH4DeDkIWLhE-dBMglUS7dmKYjSyaLz_ui8Y08G3A7VtDAodDYDvw/exec';
+const MANUALS_UPLOAD_URL=localStorage.getItem('pea_manuals_upload_url')||DEFAULT_MANUALS_UPLOAD_URL;
+const SHARED_GUIDE_PDFS=[];
+let _pdfUrl=null;
+let _remoteGuidePdfs=[];
+function pdfEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pdfSize(n){
+  n=Number(n)||0;
+  if(n>=1048576)return (n/1048576).toFixed(1)+' MB';
+  if(n>=1024)return Math.round(n/1024)+' KB';
+  return n+' B';
+}
+function openPdfDb(){
+  return new Promise(function(resolve,reject){
+    if(!window.indexedDB){reject(new Error('browser นี้ยังไม่รองรับการเก็บ PDF'));return;}
+    var req=indexedDB.open(GUIDE_PDF_DB,1);
+    req.onupgradeneeded=function(){
+      var db=req.result;
+      if(!db.objectStoreNames.contains(GUIDE_PDF_STORE)){
+        db.createObjectStore(GUIDE_PDF_STORE,{keyPath:'id'});
+      }
+    };
+    req.onsuccess=function(){resolve(req.result);};
+    req.onerror=function(){reject(req.error||new Error('เปิดฐานข้อมูล PDF ไม่ได้'));};
+  });
+}
+function pdfTx(db,mode){
+  return db.transaction(GUIDE_PDF_STORE,mode).objectStore(GUIDE_PDF_STORE);
+}
+function readFileAsBase64(file){
+  return new Promise(function(resolve,reject){
+    var fr=new FileReader();
+    fr.onload=function(){resolve(String(fr.result||'').split(',')[1]||'');};
+    fr.onerror=function(){reject(fr.error||new Error('อ่านไฟล์ไม่ได้'));};
+    fr.readAsDataURL(file);
+  });
+}
+async function importGuidePdfs(files){
+  files=Array.from(files||[]);
+  if(!files.length)return;
+  var bad=files.filter(function(f){return !(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf'));});
+  if(bad.length){alert('รับเฉพาะไฟล์ PDF เท่านั้น: '+bad.map(function(f){return f.name;}).join(', '));}
+  var pdfs=files.filter(function(f){return f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf');});
+  if(!pdfs.length)return;
+  if(MANUALS_UPLOAD_URL){
+    try{
+      await Promise.all(pdfs.map(async function(file){
+        var base64=await readFileAsBase64(file);
+        await fetch(MANUALS_UPLOAD_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({name:file.name,type:'application/pdf',size:file.size,category:'คู่มือ',base64:base64})});
+      }));
+      alert('ส่ง PDF ขึ้น Google Drive แล้ว กำลังรีเฟรชรายการ');
+      setTimeout(renderGuidePdfs,2500);
+    }catch(e){alert('อัปโหลด PDF ไม่สำเร็จ: '+e.message);}
+    return;
+  }
+  try{
+    var db=await openPdfDb();
+    await Promise.all(pdfs.map(function(file){
+      return new Promise(function(resolve,reject){
+        var item={id:String(Date.now())+'_'+Math.random().toString(36).slice(2),name:file.name,size:file.size,type:'application/pdf',updated:new Date().toISOString(),blob:file};
+        var req=pdfTx(db,'readwrite').put(item);
+        req.onsuccess=resolve;
+        req.onerror=function(){reject(req.error);};
+      });
+    }));
+    db.close();
+    renderGuidePdfs();
+  }catch(e){alert('เพิ่ม PDF ไม่สำเร็จ: '+e.message);}
+}
+async function getGuidePdfs(){
+  var db=await openPdfDb();
+  return new Promise(function(resolve,reject){
+    var req=pdfTx(db,'readonly').getAll();
+    req.onsuccess=function(){db.close();resolve(req.result||[]);};
+    req.onerror=function(){db.close();reject(req.error);};
+  });
+}
+function loadRemoteGuidePdfs(){
+  function normalizeManualRows(res){
+    if(res&&Array.isArray(res.rows)){
+      return res.rows.filter(function(x){return x.name&&x.url&&String(x.status||'active').toLowerCase()!=='deleted'&&String(x.status||'active').toLowerCase()!=='hidden';});
+    }
+    return (((res&&res.table&&res.table.rows)||[]).map(function(row){
+      var c=row.c||[];
+      function cell(i){return c[i]?String(c[i].f!=null?c[i].f:(c[i].v!=null?c[i].v:'')):'';}
+      return {name:cell(0),url:cell(1),fileId:cell(2),category:cell(3)||'คู่มือ',updated:cell(4),owner:cell(5),status:cell(6)||'active',size:Number(cell(7)||0)};
+    }).filter(function(x){return x.name&&/^https?:\/\//.test(x.url)&&String(x.status).toLowerCase()!=='deleted'&&String(x.status).toLowerCase()!=='hidden';}));
+  }
+  function jsonp(url){
+    return new Promise(function(resolve){
+      var cb='peaManualsCb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+      var sc=document.createElement('script');
+      var done=function(){delete window[cb];sc.remove();};
+      window[cb]=function(res){try{done();resolve(normalizeManualRows(res));}catch(e){done();resolve([]);}};
+      sc.onerror=function(){done();resolve([]);};
+      sc.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+cb+'&_='+Date.now();
+      document.head.appendChild(sc);
+    });
+  }
+  return new Promise(async function(resolve){
+    if(!MANUALS_SHEET_ID){resolve([]);return;}
+    var sheetUrl='https://docs.google.com/spreadsheets/d/'+MANUALS_SHEET_ID+'/gviz/tq?tqx=out:json;responseHandler:';
+    var cb='peaManualsCb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    var sc=document.createElement('script');
+    var done=function(){delete window[cb];sc.remove();};
+    window[cb]=function(res){
+      try{
+        var rows=normalizeManualRows(res);
+        done();resolve(rows);
+      }catch(e){
+        done();
+        if(MANUALS_UPLOAD_URL) jsonp(MANUALS_UPLOAD_URL).then(resolve);
+        else resolve([]);
+      }
+    };
+    sc.onerror=function(){
+      done();
+      if(MANUALS_UPLOAD_URL) jsonp(MANUALS_UPLOAD_URL).then(resolve);
+      else resolve([]);
+    };
+    sc.src=sheetUrl+cb+'&sheet='+encodeURIComponent(MANUALS_SHEET_NAME)+'&_='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+async function renderGuidePdfs(){
+  var el=document.getElementById('guidePdfList');
+  if(!el)return;
+  try{
+    var remoteItems=await loadRemoteGuidePdfs();
+    _remoteGuidePdfs=remoteItems;
+    var items=await getGuidePdfs();
+    items.sort(function(a,b){return String(b.updated).localeCompare(String(a.updated));});
+    var sharedHtml=SHARED_GUIDE_PDFS.map(function(it){
+      return '<div class="pdf-item">'+
+        '<div class="pdf-name" title="'+pdfEsc(it.name)+'">📄 '+pdfEsc(it.name)+'</div>'+
+        '<div class="pdf-meta">'+pdfSize(it.size)+' · คู่มือกลาง</div>'+
+        '<div class="pdf-actions">'+
+        '<button class="pdf-btn primary" onclick="openSharedGuidePdf(\''+pdfEsc(it.id)+'\')">เปิดดู</button>'+
+        '</div></div>';
+    }).join('');
+    var remoteHtml=remoteItems.map(function(it,i){
+      return '<div class="pdf-item">'+
+        '<div class="pdf-name" title="'+pdfEsc(it.name)+'">📄 '+pdfEsc(it.name)+'</div>'+
+        '<div class="pdf-meta">'+pdfSize(it.size)+' · Google Drive'+(it.updated?' · '+pdfEsc(it.updated):'')+'</div>'+
+        '<div class="pdf-actions">'+
+        '<button class="pdf-btn primary" onclick="openRemoteGuidePdf('+i+')">เปิดดู</button>'+
+        '<button class="pdf-btn danger" onclick="deleteRemoteGuidePdf('+i+')">ลบ</button>'+
+        '</div></div>';
+    }).join('');
+    var localHtml=items.map(function(it){
+      return '<div class="pdf-item">'+
+        '<div class="pdf-name" title="'+pdfEsc(it.name)+'">📄 '+pdfEsc(it.name)+'</div>'+
+        '<div class="pdf-meta">'+pdfSize(it.size)+' · PDF ส่วนตัว · '+new Date(it.updated).toLocaleString('th-TH')+'</div>'+
+        '<div class="pdf-actions">'+
+        '<button class="pdf-btn primary" onclick="openGuidePdf(\''+pdfEsc(it.id)+'\')">เปิดดู</button>'+
+        '<button class="pdf-btn danger" onclick="deleteGuidePdf(\''+pdfEsc(it.id)+'\')">ลบ</button>'+
+        '</div></div>';
+    }).join('');
+    el.innerHTML=sharedHtml+remoteHtml+localHtml;
+  }catch(e){
+    el.innerHTML=SHARED_GUIDE_PDFS.map(function(it){
+      return '<div class="pdf-item"><div class="pdf-name">📄 '+pdfEsc(it.name)+'</div><div class="pdf-meta">คู่มือกลาง</div><div class="pdf-actions"><button class="pdf-btn primary" onclick="openSharedGuidePdf(\''+pdfEsc(it.id)+'\')">เปิดดู</button></div></div>';
+    }).join('')+'<div class="pdf-empty">โหลด PDF ส่วนตัวไม่ได้: '+pdfEsc(e.message)+'</div>';
+  }
+}
+function drivePreviewUrl(item){
+  if(item.fileId)return 'https://drive.google.com/file/d/'+encodeURIComponent(item.fileId)+'/preview';
+  var m=String(item.url||'').match(/\/d\/([^/]+)\//)||String(item.url||'').match(/[?&]id=([^&]+)/);
+  return m ? 'https://drive.google.com/file/d/'+encodeURIComponent(m[1])+'/preview' : item.url;
+}
+function openRemoteGuidePdf(i){
+  var item=_remoteGuidePdfs[i];
+  if(!item)return;
+  if(_pdfUrl){URL.revokeObjectURL(_pdfUrl);_pdfUrl=null;}
+  var url=drivePreviewUrl(item);
+  document.getElementById('pdfViewerTitle').textContent=item.name;
+  document.getElementById('pdfViewerOpen').href=item.url;
+  document.getElementById('pdfFrame').src=url;
+  document.getElementById('pdfViewer').classList.add('on');
+}
+async function deleteRemoteGuidePdf(i){
+  var item=_remoteGuidePdfs[i];
+  if(!item)return;
+  if(!confirm('ต้องการลบ PDF นี้ออกจากคู่มือใช่ไหม?\\n\\n'+item.name))return;
+  if(!MANUALS_UPLOAD_URL){alert('ยังไม่ได้ตั้งค่า Apps Script สำหรับลบ PDF');return;}
+  try{
+    await fetch(MANUALS_UPLOAD_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'delete',fileId:item.fileId,name:item.name})
+    });
+    setTimeout(renderGuidePdfs,1800);
+  }catch(e){
+    alert('ลบ PDF ไม่สำเร็จ: '+e.message);
+  }
+}
+function openSharedGuidePdf(id){
+  var item=SHARED_GUIDE_PDFS.find(function(x){return x.id===id;});
+  if(!item)return;
+  if(_pdfUrl){URL.revokeObjectURL(_pdfUrl);_pdfUrl=null;}
+  document.getElementById('pdfViewerTitle').textContent=item.name;
+  document.getElementById('pdfViewerOpen').href=item.url;
+  document.getElementById('pdfFrame').src=item.url;
+  document.getElementById('pdfViewer').classList.add('on');
+}
+async function openGuidePdf(id){
+  try{
+    var db=await openPdfDb();
+    var item=await new Promise(function(resolve,reject){
+      var req=pdfTx(db,'readonly').get(id);
+      req.onsuccess=function(){resolve(req.result);};
+      req.onerror=function(){reject(req.error);};
+    });
+    db.close();
+    if(!item)return;
+    if(_pdfUrl)URL.revokeObjectURL(_pdfUrl);
+    _pdfUrl=URL.createObjectURL(item.blob);
+    document.getElementById('pdfViewerTitle').textContent=item.name;
+    document.getElementById('pdfViewerOpen').href=_pdfUrl;
+    document.getElementById('pdfFrame').src=_pdfUrl;
+    document.getElementById('pdfViewer').classList.add('on');
+  }catch(e){alert('เปิด PDF ไม่สำเร็จ: '+e.message);}
+}
+async function deleteGuidePdf(id){
+  if(!confirm('ลบ PDF นี้ออกจากคู่มือ?'))return;
+  try{
+    var db=await openPdfDb();
+    await new Promise(function(resolve,reject){
+      var req=pdfTx(db,'readwrite').delete(id);
+      req.onsuccess=resolve;
+      req.onerror=function(){reject(req.error);};
+    });
+    db.close();
+    renderGuidePdfs();
+  }catch(e){alert('ลบ PDF ไม่สำเร็จ: '+e.message);}
+}
+function closeGuidePdf(e){
+  if(e&&e.target&&e.target.id!=='pdfViewer')return;
+  var viewer=document.getElementById('pdfViewer');
+  var frame=document.getElementById('pdfFrame');
+  if(viewer)viewer.classList.remove('on');
+  if(frame)frame.src='about:blank';
+  if(_pdfUrl){URL.revokeObjectURL(_pdfUrl);_pdfUrl=null;}
+}
+function fmtPrintNow(){
+  const n=new Date();
+  const y=String((n.getFullYear()+543)%100).padStart(2,'0');
+  const d=String(n.getDate()).padStart(2,'0');
+  const t=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  return d+' '+MONTH_LABELS[n.getMonth()+1]+' '+y+' '+t;
+}
+function dateSortKey(s){const {y,m,d}=parseDate(s);return y*10000+m*100+d;}
+function bc(s){if(s.includes('ปิด'))return'bg';if(s.includes('รอ'))return'ba';if(s.includes('ค้าง'))return'br';return'bgr';}
+function bl(s){if(s.includes('ปิด'))return'ปิดงาน';if(s.includes('รอ'))return'รอดำเนินการ';if(s.includes('ค้าง'))return'ค้างจ่าย';return s||'ไม่ระบุ';}
+
+// ── METRICS ──
+function buildMets(el, data){
+  if(!el) return;
+  const total=data.length, closed=data.filter(r=>g(r,11).includes('ปิด')).length;
+  const pend=total-closed, inst=data.filter(r=>g(r,3).includes('ติดตั้ง')).length;
+  el.innerHTML=`
+    <div class="met"><div class="ml">ทั้งหมด</div><div class="mv">${total.toLocaleString()}</div><div class="ms">รายการ</div></div>
+    <div class="met g"><div class="ml">ปิดงาน</div><div class="mv">${closed.toLocaleString()}</div><div class="ms">${Math.round(closed/total*100)||0}%</div></div>
+    <div class="met a"><div class="ml">รอดำเนินการ</div><div class="mv">${pend.toLocaleString()}</div><div class="ms">ยังไม่ปิด</div></div>
+    <div class="met t"><div class="ml">ติดตั้งใหม่</div><div class="mv">${inst.toLocaleString()}</div><div class="ms">${Math.round(inst/total*100)||0}%</div></div>
+  `;
+  if(el && el.id==='mets' && typeof renderSearchInsights==='function') renderSearchInsights();
+}
+
+// ── SEARCH ──
+let filtered=[], curPg=1, sortC=0, sortAsc=false;
+const PS=40;
+function isQueued(r){return Array.isArray(window.printSelectedRows)&&printSelectedRows.some(x=>g(x,0)===g(r,0));}
+function queueCell(r){const on=isQueued(r);return `<td class="print-col"><button class="queue-row-btn ${on?'on':''}" onclick="toggleQueueRow('${g(r,0)}',event)" title="${on?'เอาออกจากคิวพิมพ์':'เลือกพิมพ์'}">${on?'✓':'＋'}</button></td>`;}
+
+function searchKey(s){return String(s||'').toLowerCase().replace(/[^0-9a-zก-๙]/gi,'');}
+function rowHasCoord(r){const lat=g(r,9),lng=g(r,10);return !!(lat&&lng&&lat!=='0'&&lng!=='0'&&lat!=='ไม่มีพิกัด'&&lng!=='ไม่มีพิกัด');}
+function passFieldFilter(r,f){
+  if(!f)return true;
+  const remark=g(r,12), req=g(r,17), status=g(r,11);
+  if(f==='noCoord')return !rowHasCoord(r);
+  if(f==='hasRemark')return !!remark;
+  if(f==='hasReq')return !!req;
+  if(f==='noReq')return !req;
+  if(f==='debt')return (remark+status).includes('ค้างจ่าย') || (remark+status).includes('ค้าง');
+  return true;
+}
+
+function doSearch(){
+  const q=document.getElementById('qi').value.toLowerCase().trim();
+  const qk=searchKey(q);
+  const qAlt=qk.startsWith('hpty') ? qk.slice(4) : qk;
+  const ft=document.getElementById('ft').value;
+  const fst=document.getElementById('fst').value;
+  const fz=document.getElementById('fz').value;
+  const ff=document.getElementById('ff')?.value || '';
+  filtered=RAW.filter(r=>{
+    if(q){const h=r.map(v=>String(v||'')).join(' ').toLowerCase(), hk=searchKey(h);if(!h.includes(q)&&!hk.includes(qk)&&!hk.includes(qAlt))return false;}
+    if(ft&&!g(r,3).includes(ft))return false;
+    if(fst&&!g(r,11).includes(fst))return false;
+    if(fz&&zoneVal(r)!==fz)return false;
+    if(!passFieldFilter(r,ff))return false;
+    return true;
+  });
+  filtered.sort((a,b)=>{
+    let av=g(a,sortC),bv=g(b,sortC);
+    if(!isNaN(+av)&&!isNaN(+bv)){av=+av;bv=+bv;}
+    return sortAsc?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
+  });
+  curPg=1;
+  document.getElementById('ri').textContent=`พบ ${filtered.length.toLocaleString()} รายการ`;
+  renderTable();
+}
+
+const HEADS=[['#',0],['วันที่',1],['ผู้ปฏิบัติ',2],['ประเภทงาน',3],['มิเตอร์ใหม่ (PEA)',4],['ขนาด',5],['Zone',8],['ชื่อ / ที่อยู่',13],['สถานะ',11]];
+
+function renderTable(){
+  if(!filtered.length){document.getElementById('tw').innerHTML='<div class="empty">ไม่พบรายการที่ตรงกับเงื่อนไข</div>';return;}
+  const st=(curPg-1)*PS, pageRows=filtered.slice(st,st+PS), tp=Math.ceil(filtered.length/PS);
+  let h=`<table><thead><tr><th class="print-col">พิมพ์</th>`;
+  HEADS.forEach(([lbl,ci])=>{
+    const s=sortC===ci;
+    h+=`<th class="${s?'on':''}" onclick="setSort(${ci})">${lbl}<span class="si2">${s?(sortAsc?'↑':'↓'):'↕'}</span></th>`;
+  });
+  h+=`</tr></thead><tbody>`;
+  pageRows.forEach((r,i)=>{
+    const s=g(r,11), name=g(r,13)||'ไม่ระบุ', addr=g(r,14);
+    const addrShort = addr.length>50 ? addr.slice(0,48)+'…' : addr;
+    h+=`<tr data-seq="${g(r,0)}" class="${isQueued(r)?'print-selected':''}" onclick="openMo(${st+i})">
+      ${queueCell(r)}
+      <td class="mono" style="color:var(--t3)">${g(r,0)}</td>
+      <td class="mono">${fmtDate(g(r,1))}</td>
+      <td>${g(r,2)||'—'}</td>
+      <td>${g(r,3)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td style="color:var(--t2)">${g(r,5)||'—'}</td>
+      <td style="text-align:center;color:var(--t2)">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Z'+zoneVal(r)}</td>
+      <td>
+        <div class="cell-name">${name}</div>
+        ${addr?`<div class="cell-addr">${addrShort}</div>`:''}
+      </td>
+      <td><span class="badge ${bc(s)}">${bl(s)}</span></td>
+    </tr>`;
+  });
+  h+=`</tbody></table>`;
+  h+=buildPgn(curPg,tp);
+  document.getElementById('tw').innerHTML=h;
+}
+
+function setSelectOptions(el, values, firstLabel){
+  if(!el) return;
+  var old=el.value;
+  el.innerHTML='<option value="">'+firstLabel+'</option>'+values.map(function(v){
+    return '<option value="'+String(v).replace(/"/g,'&quot;')+'">'+v+'</option>';
+  }).join('');
+  if(values.indexOf(old)>=0) el.value=old;
+}
+function refreshAmiFilters(rows){
+  setSelectOptions(
+    document.getElementById('amiSource'),
+    [...new Set((rows||[]).map(function(r){return g(r,8);}).filter(Boolean))].sort(),
+    'ทุกแหล่งข้อมูล'
+  );
+  setSelectOptions(
+    document.getElementById('amiWorker'),
+    [...new Set((rows||[]).map(function(r){return g(r,2);}).filter(Boolean))].sort(),
+    'ทุกผู้ปฏิบัติ'
+  );
+  setSelectOptions(
+    document.getElementById('amiSt'),
+    [...new Set((rows||[]).map(function(r){return g(r,11);}).filter(Boolean))].sort(),
+    'ทุกสถานะ'
+  );
+}
+function dateObjFromRow(r){
+  var p=parseDate(g(r,1));
+  if(!p.y||!p.m||!p.d) return null;
+  var fullYear=p.y<100 ? 2000+p.y : p.y;
+  return new Date(fullYear, p.m-1, p.d);
+}
+function passAmiDateRange(r, range){
+  if(!range) return true;
+  var d=dateObjFromRow(r);
+  if(!d) return false;
+  var now=new Date();
+  var start=new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if(range==='today') return d.getTime()===start.getTime();
+  if(range==='7d'){var s7=new Date(start);s7.setDate(s7.getDate()-6);return d>=s7&&d<=start;}
+  if(range==='30d'){var s30=new Date(start);s30.setDate(s30.getDate()-29);return d>=s30&&d<=start;}
+  if(range==='month') return d.getFullYear()===start.getFullYear()&&d.getMonth()===start.getMonth();
+  return true;
+}
+function buildAmiMets(data){
+  var el=document.getElementById('amiMets');
+  if(!el) return;
+  data=data||[];
+  var total=data.length;
+  var closed=data.filter(function(r){return g(r,11).includes('ปิด');}).length;
+  var pending=total-closed;
+  var ami=data.filter(function(r){return g(r,8)==='AMI';}).length;
+  var rotary=data.filter(function(r){return g(r,8)==='จานหมุน';}).length;
+  el.innerHTML=
+    '<div class="met"><div class="ml">ทั้งหมด</div><div class="mv">'+total.toLocaleString()+'</div><div class="ms">รายการ</div></div>'+
+    '<div class="met a"><div class="ml">รอดำเนินการ</div><div class="mv">'+pending.toLocaleString()+'</div><div class="ms">ยังไม่ปิด</div></div>'+
+    '<div class="met g"><div class="ml">ปิดงาน</div><div class="mv">'+closed.toLocaleString()+'</div><div class="ms">'+(total?Math.round(closed/total*100):0)+'%</div></div>'+
+    '<div class="met t"><div class="ml">AMI</div><div class="mv">'+ami.toLocaleString()+'</div><div class="ms">'+(total?Math.round(ami/total*100):0)+'%</div></div>'+
+    '<div class="met p"><div class="ml">จานหมุน</div><div class="mv">'+rotary.toLocaleString()+'</div><div class="ms">'+(total?Math.round(rotary/total*100):0)+'%</div></div>';
+}
+function renderAmi(){
+  var rows=AMI_ROWS||[];
+  var q=(document.getElementById('amiQi')?.value||'').toLowerCase().trim();
+  var source=document.getElementById('amiSource')?.value||'';
+  var worker=document.getElementById('amiWorker')?.value||'';
+  var dateRange=document.getElementById('amiDateRange')?.value||'';
+  var st=document.getElementById('amiSt')?.value||'';
+  var data=rows.filter(function(r){
+    if(source&&g(r,8)!==source) return false;
+    if(worker&&g(r,2)!==worker) return false;
+    if(!passAmiDateRange(r,dateRange)) return false;
+    if(st&&!g(r,11).includes(st)) return false;
+    if(q){
+      var h=r.map(function(v){return String(v||'');}).join(' ').toLowerCase();
+      var hk=searchKey(h), qk=searchKey(q);
+      if(!h.includes(q)&&!hk.includes(qk)) return false;
+    }
+    return true;
+  }).sort(function(a,b){
+    return dateSortKey(g(b,1))-dateSortKey(g(a,1));
+  });
+  refreshAmiFilters(rows);
+  buildAmiMets(data);
+  var ri=document.getElementById('amiRi');
+  if(ri) ri.textContent='พบ '+data.length.toLocaleString()+' รายการ';
+  var box=document.getElementById('amiTw');
+  if(!box) return;
+  if(!data.length){box.innerHTML='<div class="empty">ไม่พบรายการเลิกใช้</div>';return;}
+  var h='<table><thead><tr><th class="print-col">พิมพ์</th><th>#</th><th>วันที่</th><th>ผู้ปฏิบัติ</th><th>ประเภทงาน</th><th>มิเตอร์ (PEA)</th><th>ขนาด</th><th>แหล่งข้อมูล</th><th>ชื่อ / ที่อยู่</th><th>สถานะ</th></tr></thead><tbody>';
+  data.forEach(function(r,i){
+    var s=g(r,11), name=g(r,13)||'ไม่ระบุ', addr=g(r,14);
+    var addrShort=addr.length>56?addr.slice(0,54)+'…':addr;
+    var hpty=g(r,16), tail=g(r,18), req=g(r,17), inst=g(r,7);
+    var sub=[hpty, tail, req?('คำร้อง '+req):'', inst?('INST '+inst):''].filter(Boolean).join(' · ');
+    h+='<tr data-seq="'+g(r,0)+'" class="'+(isQueued(r)?'print-selected':'')+'" onclick="openAmiMo('+i+')">'+
+      queueCell(r)+
+      '<td class="mono" style="color:var(--t3)">'+g(r,0)+'</td>'+
+      '<td class="mono">'+fmtDate(g(r,1))+'</td>'+
+      '<td>'+g(r,2)+'</td>'+
+      '<td>'+g(r,3)+'</td>'+
+      '<td class="mono" style="color:var(--teal)">'+g(r,4)+'</td>'+
+      '<td>'+g(r,5)+'</td>'+
+      '<td style="color:var(--t2)">'+g(r,8)+'</td>'+
+      '<td><div class="cell-name">'+name+'</div>'+(addr?'<div class="cell-addr">'+addrShort+'</div>':'')+(sub?'<div class="cell-addr mono">'+sub+'</div>':'')+'</td>'+
+      '<td><span class="badge '+bc(s)+'">'+bl(s)+'</span></td>'+
+    '</tr>';
+  });
+  h+='</tbody></table>';
+  box.innerHTML=h;
+  window.amiFiltered=data;
+}
+function openAmiMo(i){
+  var data=window.amiFiltered||AMI_ROWS||[];
+  var r=data[i];
+  if(!r) return;
+  _printRow=r;
+  var reason=g(r,12);
+  document.getElementById('mbox').innerHTML=
+    '<div class="mh"><div class="mt">⚡ '+(g(r,13)||'เลิกใช้ปกติ')+'</div><button class="mc" onclick="closeMo()">×</button></div>'+
+    '<div class="msec"><div class="msect">สถานะ</div><span class="badge '+bc(g(r,11))+'">'+bl(g(r,11))+'</span></div>'+
+    '<div class="msec"><div class="msect">รหัสงาน</div><div class="mgrid">'+
+      '<div class="mf"><div class="mfl">HPTY</div><div class="mfv mono">'+(g(r,16)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">เลขหลัง 6 ตัว</div><div class="mfv mono">'+(g(r,18)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">มิเตอร์ PEA</div><div class="mfv mono">'+(g(r,4)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">เลข INST</div><div class="mfv mono">'+(g(r,7)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">เลขคำร้อง</div><div class="mfv mono">'+(g(r,17)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">แหล่งข้อมูล</div><div class="mfv">'+(g(r,8)||'—')+'</div></div>'+
+    '</div></div>'+
+    '<div class="msec"><div class="msect">ข้อมูลงาน</div><div class="mgrid">'+
+      '<div class="mf"><div class="mfl">วันที่ได้รับใบงาน</div><div class="mfv">'+fmtDate(g(r,1))+'</div></div>'+
+      '<div class="mf"><div class="mfl">ผู้ปฏิบัติงาน</div><div class="mfv">'+(g(r,2)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">ประเภทงาน</div><div class="mfv">'+(g(r,3)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">ขนาด</div><div class="mfv">'+(g(r,5)||'—')+'</div></div>'+
+    '</div></div>'+
+    '<div class="msec"><div class="msect">ผู้ใช้ไฟ / ที่อยู่</div><div class="mgrid">'+
+      '<div class="mf full"><div class="mfl">ชื่อ</div><div class="mfv">'+(g(r,13)||'—')+'</div></div>'+
+      '<div class="mf full"><div class="mfl">ที่อยู่</div><div class="mfv">'+(g(r,14)||'—')+'</div></div>'+
+    '</div></div>'+
+    (reason?'<div class="msec"><div class="msect">เหตุผล / หมายเหตุ</div><div class="mf full"><div class="mfv">'+reason+'</div></div></div>':'')+
+    '<button class="copy-btn" onclick="copyJobText()">📋 คัดลอกข้อมูลงาน</button>';
+  document.getElementById('mo').classList.add('on');
+}
+
+function buildPgn(c,t){
+  if(t<=1)return'';
+  const pages=new Set([1,2,c-1,c,c+1,t-1,t].filter(p=>p>=1&&p<=t));
+  const sorted=[...pages].sort((a,b)=>a-b);
+  let h=`<div class="pgs"><button class="pb" onclick="goPg(${c-1})" ${c<=1?'disabled':''}>‹</button>`;
+  let last=0;
+  sorted.forEach(p=>{if(p-last>1)h+=`<span style="color:var(--t3);font-size:11px;padding:0 2px">…</span>`;h+=`<button class="pb ${p===c?'on':''}" onclick="goPg(${p})">${p}</button>`;last=p;});
+  h+=`<button class="pb" onclick="goPg(${c+1})" ${c>=t?'disabled':''}>›</button></div>`;
+  return h;
+}
+function goPg(p){curPg=p;renderTable();window.scrollTo(0,120);}
+function setSort(c){if(sortC===c)sortAsc=!sortAsc;else{sortC=c;sortAsc=true;}doSearch();}
+
+function buildJobText(r){
+  const lat=g(r,9),lng=g(r,10), gps=rowHasCoord(r)?lat+', '+lng:'-';
+  const lines=[
+    'ใบงาน PEA บางละมุง',
+    'ลำดับ: '+(g(r,0)||'-'),
+    'เลขที่คำร้อง: '+(g(r,17)||'-'),
+    'วันที่จ่ายงาน: '+fmtDate(g(r,1)),
+    'ผู้ปฏิบัติงาน: '+(g(r,2)||'-'),
+    'ประเภทงาน: '+(g(r,3)||'-'),
+    'ชื่อ: '+(g(r,13)||'-'),
+    'มิเตอร์ใหม่: '+(g(r,4)||'-'),
+    'MRU: '+(g(r,16)||'-'),
+    'ขนาด: '+(g(r,5)||'-'),
+    'ที่อยู่: '+(g(r,14)||'-'),
+    'โทร: '+(g(r,15)||'-'),
+    'GPS: '+gps,
+    'สถานะ: '+(g(r,11)||'-')
+  ];
+  if(g(r,12))lines.push('หมายเหตุ: '+g(r,12));
+  if(rowHasCoord(r))lines.push('Maps: https://maps.google.com/?q='+lat+','+lng);
+  return lines.join('\n');
+}
+
+function copyJobText(){
+  if(!_printRow)return;
+  const txt=buildJobText(_printRow);
+  const done=()=>{const b=document.getElementById('copyJobBtn');if(b){b.textContent='✓ คัดลอกแล้ว';setTimeout(()=>b.textContent='📋 คัดลอกข้อมูลงาน',1400);}};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){
+  const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();done();
+}
+// ── MODAL ──
+function openMo(idx){
+  const r=filtered[idx];if(!r)return;
+  const s=g(r,11),name=g(r,13)||'(ไม่มีชื่อ)';
+  const lat=g(r,9),lng=g(r,10);
+  const hasGps=lat&&lng&&lat!='0'&&lng!='0';
+  const mru=g(r,16),requestNo=g(r,17),rmk=g(r,12);
+  document.getElementById('mbox').innerHTML=`
+    <div class="mh">
+      <div class="mt">${name}</div>
+      <button class="mc" onclick="closeMo()">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="badge ${bc(s)}">${bl(s)}</span>
+      <span class="badge bgr">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Zone '+zoneVal(r)}</span>
+      ${g(r,3)?`<span class="badge bgr">${g(r,3)}</span>`:''}
+    </div>
+    ${(requestNo||mru)?`<div class="msec"><div class="msect">คำร้อง / MRU</div><div class="mgrid"><div class="mf"><div class="mfl">เลขที่คำร้อง</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${requestNo||'—'}</div></div><div class="mf"><div class="mfl">รหัส MRU</div><div class="mfv mru">${mru||'—'}</div></div></div></div>`:''}
+    <div class="msec"><div class="msect">ข้อมูลงาน</div>
+      <div class="mgrid">
+        <div class="mf"><div class="mfl">วันที่จ่ายงาน</div><div class="mfv">${fmtDate(g(r,1))}</div></div>
+        <div class="mf"><div class="mfl">ผู้ปฏิบัติงาน</div><div class="mfv">${g(r,2)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ลำดับที่</div><div class="mfv mono">${g(r,0)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาดมิเตอร์</div><div class="mfv">${g(r,5)||'—'}</div></div>
+      </div>
+    </div>
+    <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
+      <div class="mgrid">
+        <div class="mf full"><div class="mfl">มิเตอร์ใหม่ (PEA)</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${g(r,4)||'—'}</div></div>
+        <div class="mf full"><div class="mfl">มิเตอร์เก่า (PEA)</div><div class="mfv mono">${g(r,7)||'—'}</div></div>
+        <div class="mf"><div class="mfl">รุ่นมิเตอร์</div><div class="mfv">${g(r,6)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาด / Phase</div><div class="mfv">${g(r,5)||'—'}</div></div>
+      </div>
+    </div>
+    <div class="msec"><div class="msect">ที่อยู่และการติดต่อ</div>
+      <div class="mgrid">
+        <div class="mf full"><div class="mfl">ที่อยู่</div><div class="mfv">${g(r,14)||'—'}</div></div>
+        <div class="mf"><div class="mfl">เบอร์โทร</div><div class="mfv">${g(r,15)?`<a href="tel:${g(r,15)}" style="color:var(--blue);text-decoration:none">${g(r,15)}</a>`:'—'}</div></div>
+        <div class="mf"><div class="mfl">พิกัด GPS</div><div class="mfv mono" style="font-size:10px">${hasGps?lat+', '+lng:'—'}</div></div>
+      </div>
+    </div>
+    ${hasGps?`<a class="glink" href="https://maps.google.com/?q=${lat},${lng}" target="_blank">📍 เปิดใน Google Maps</a>`:''}
+    ${rmk?`<div class="msec" style="margin-top:10px"><div class="msect">หมายเหตุ</div><div class="mf"><div class="mfv">${rmk}</div></div></div>`:''}
+  `;
+  _printRow = r;
+  document.getElementById('mbox').innerHTML += '<button class="copy-btn" id="copyJobBtn" onclick="copyJobText()">📋 คัดลอกข้อมูลงาน</button>';
+  document.getElementById('mbox').innerHTML += '<button class="print-btn" onclick="doPrint()">🖨️ พิมพ์ใบงานนี้</button>';
+  var inQueue = printSelectedRows.some(function(x){ return x[0]===r[0]; });
+  document.getElementById('mbox').innerHTML += '<button class="select-print-btn' + (inQueue?' selected':'') + '" id="queueToggleBtn" onclick="toggleQueue()">☑️ ' + (inQueue?'ถูกเลือกแล้ว ('+printSelectedRows.length+'/4)':'เลือกพิมพ์พร้อมกัน') + '</button>';
+  document.getElementById('mo').classList.add('on');
+}
+function closeMo(e){if(!e||e.target.id==='mo')document.getElementById('mo').classList.remove('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMo();closeGuidePdf();}});
+
+// ── PENDING ──
+function getPendingRows(){
+  return (RAW||[]).filter(r=>!g(r,11).includes('ปิด'));
+}
+
+function initPending(){
+  const PENDING = getPendingRows();
+  buildMets(document.getElementById('pmets'), PENDING);
+  const workers=[...new Set(PENDING.map(r=>g(r,2)).filter(Boolean))].sort();
+  const sel=document.getElementById('pw');
+  if(!sel) return;
+  sel.innerHTML='<option value="">ทุกผู้ปฏิบัติ</option>';
+  workers.forEach(w=>sel.innerHTML+=`<option>${w}</option>`);
+  renderPending();
+}
+
+function renderPending(){
+  const PENDING = getPendingRows();
+  const fw=document.getElementById('pw').value;
+  const ftype=document.getElementById('ptype').value;
+  let data=PENDING.filter(r=>{
+    if(fw&&g(r,2)!==fw)return false;
+    if(ftype&&!g(r,3).includes(ftype))return false;
+    return true;
+  }).sort((a,b)=>dateSortKey(g(b,1))-dateSortKey(g(a,1)));
+
+  if(!data.length){document.getElementById('ptw').innerHTML='<div class="empty">ไม่พบรายการค้าง</div>';return;}
+  let h=`<table><thead><tr>
+    <th class="print-col">พิมพ์</th><th>#</th><th>วันที่</th><th>ผู้ปฏิบัติ</th><th>ประเภทงาน</th><th>มิเตอร์ใหม่ (PEA)</th><th>ขนาด</th><th>Zone</th><th>ชื่อ / ที่อยู่</th><th>สถานะ</th>
+  </tr></thead><tbody>`;
+  data.forEach((r,i)=>{
+    const s=g(r,11), name=g(r,13)||'ไม่ระบุ', addr=g(r,14);
+    const addrShort=addr.length>50?addr.slice(0,48)+'…':addr;
+    h+=`<tr data-seq="${g(r,0)}" class="${isQueued(r)?'print-selected':''}" onclick="openPendMo(${i},${JSON.stringify(data.map((_,j)=>j)).replace(/"/g,'')})">
+      ${queueCell(r)}
+      <td class="mono" style="color:var(--t3)">${g(r,0)}</td>
+      <td class="mono">${fmtDate(g(r,1))}</td>
+      <td>${g(r,2)||'—'}</td>
+      <td>${g(r,3)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td style="color:var(--t2)">${g(r,5)||'—'}</td>
+      <td style="text-align:center;color:var(--t2)">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Z'+zoneVal(r)}</td>
+      <td><div class="cell-name">${name}</div>${addr?`<div class="cell-addr">${addrShort}</div>`:''}</td>
+      <td><span class="badge ${bc(s)}">${bl(s)}</span></td>
+    </tr>`;
+  });
+  h+=`</tbody></table>`;
+  document.getElementById('ptw').innerHTML=h;
+  pendingData=data;
+}
+let pendingData=[];
+function openPendMo(i){
+  filtered=pendingData;
+  openMo(i);
+}
+
+// ── DAILY SUMMARY ──
+var BY_DATE={};
+var ALL_DATES=[];
+
+function buildByDate(){
+  BY_DATE={};
+  RAW.forEach(r=>{
+    const d=g(r,1);
+    if(!d||d==='OLD')return;
+    if(!BY_DATE[d])BY_DATE[d]=[];
+    BY_DATE[d].push(r);
+  });
+  ALL_DATES=Object.keys(BY_DATE).sort((a,b)=>dateSortKey(b)-dateSortKey(a));
+}
+let dailyView='day';
+
+function initDaily(){
+  if(!document.getElementById('dailyContent') && typeof window.refreshSummaryFromLive==='function'){
+    window.refreshSummaryFromLive();
+    return;
+  }
+  buildByDate();
+  const sel=document.getElementById('dayPick');
+  const prev=sel.value;
+  sel.innerHTML='';
+  ALL_DATES.forEach(d=>{
+    const opt=document.createElement('option');
+    opt.value=d;opt.textContent=fmtDate(d)+' ('+BY_DATE[d].length+' งาน)';
+    sel.appendChild(opt);
+  });
+  // restore previously selected date if still exists
+  if(prev&&BY_DATE[prev]) sel.value=prev;
+  renderDaily();
+}
+
+function setView(v,btn){
+  dailyView=v;
+  document.querySelectorAll('.wt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDaily();
+}
+
+function renderDaily(){
+  const selDate=document.getElementById('dayPick').value;
+  let data=[];
+  if(dailyView==='day'){
+    data=BY_DATE[selDate]||[];
+  } else {
+    // week: pick same week (±3 days)
+    const base=dateSortKey(selDate);
+    ALL_DATES.forEach(d=>{
+      const diff=Math.abs(dateSortKey(d)-base);
+      if(diff<=6)data=[...data,...(BY_DATE[d]||[])];
+    });
+  }
+
+  if(!data.length){document.getElementById('dailyContent').innerHTML='<div class="empty">ไม่มีข้อมูล</div>';return;}
+
+  // Group by worker
+  const byWorker={};
+  data.forEach(r=>{
+    const w=g(r,2)||'ไม่ระบุ';
+    if(!byWorker[w])byWorker[w]=[];
+    byWorker[w].push(r);
+  });
+
+  const workers=Object.entries(byWorker).sort((a,b)=>b[1].length-a[1].length);
+  const total=data.length, closed=data.filter(r=>g(r,11).includes('ปิด')).length;
+
+  let h=`<div class="mets" style="margin-bottom:16px">
+    <div class="met"><div class="ml">งานทั้งหมด</div><div class="mv">${total}</div><div class="ms">${dailyView==='day'?selDate:'ช่วงสัปดาห์'}</div></div>
+    <div class="met g"><div class="ml">ปิดงาน</div><div class="mv">${closed}</div><div class="ms">${Math.round(closed/total*100)}%</div></div>
+    <div class="met a"><div class="ml">รอดำเนินการ</div><div class="mv">${total-closed}</div><div class="ms">ยังไม่ปิด</div></div>
+    <div class="met p"><div class="ml">ทีมงาน</div><div class="mv">${workers.length}</div><div class="ms">คน/ชุด</div></div>
+  </div>`;
+
+  h+=`<div class="worker-cards">`;
+  workers.forEach(([name,rows])=>{
+    const types={};
+    rows.forEach(r=>{
+      let t=g(r,3)||'อื่นๆ';
+      if(t.includes('ติดตั้ง'))t='ติดตั้งใหม่';
+      else if(t.includes('เพิ่ม'))t='เพิ่มขนาด';
+      else if(t.includes('TOU'))t='TOU';
+      else if(t.includes('เปลี่ยน'))t='เปลี่ยนประเภท';
+      types[t]=(types[t]||0)+1;
+    });
+    const cl=rows.filter(r=>g(r,11).includes('ปิด')).length;
+    h+=`<div class="wcard">
+      <div class="wcard-name">👤 ${name}</div>
+      <div class="wcard-count">${rows.length}</div>
+      <div class="wcard-sub">ปิดแล้ว ${cl} / ${rows.length} (${Math.round(cl/rows.length*100)}%)</div>
+      <div class="type-pills">${Object.entries(types).map(([t,n])=>`<span class="tpill">${t} ×${n}</span>`).join('')}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+
+  // Table of all jobs that day
+  h+=`<div class="tw"><table><thead><tr>
+    <th class="print-col">พิมพ์</th><th>#</th><th>ผู้ปฏิบัติ</th><th>ประเภทงาน</th><th>มิเตอร์ใหม่ (PEA)</th><th>ขนาด</th><th>ชื่อ / ที่อยู่</th><th>สถานะ</th>
+  </tr></thead><tbody>`;
+  data.forEach((r,i)=>{
+    const s=g(r,11), name=g(r,13)||'ไม่ระบุ', addr=g(r,14);
+    h+=`<tr data-seq="${g(r,0)}" class="${isQueued(r)?'print-selected':''}" onclick="openDailyMo(${i})">
+      ${queueCell(r)}
+      <td class="mono" style="color:var(--t3)">${g(r,0)}</td>
+      <td>${g(r,2)||'—'}</td>
+      <td>${g(r,3)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td style="color:var(--t2)">${g(r,5)||'—'}</td>
+      <td><div class="cell-name">${name}</div>${addr?`<div class="cell-addr">${addr.length>50?addr.slice(0,48)+'…':addr}</div>`:''}</td>
+      <td><span class="badge ${bc(s)}">${bl(s)}</span></td>
+    </tr>`;
+  });
+  h+=`</tbody></table></div>`;
+  document.getElementById('dailyContent').innerHTML=h;
+  dailyData=data;
+}
+let dailyData=[];
+function openDailyMo(i){filtered=dailyData;openMo(i);}
+
+// ── DASHBOARD ──
+function buildDash(){
+  const mainRows = RAW || [];
+  const discRows = AMI_ROWS || [];
+  const allRows = mainRows.concat(discRows);
+  const mainClosed = mainRows.filter(r=>g(r,11).includes('ปิด')).length;
+  const discClosed = discRows.filter(r=>g(r,11).includes('ปิด')).length;
+  const total = allRows.length;
+  const closed = mainClosed + discClosed;
+  const waiting = total - closed;
+  const el = document.getElementById('dmets');
+  if(el){
+    el.innerHTML = `
+      <div class="met"><div class="ml">งานหลัก</div><div class="mv">${mainRows.length.toLocaleString()}</div><div class="ms">รายการ</div></div>
+      <div class="met g"><div class="ml">เลิกใช้ปกติ</div><div class="mv">${discRows.length.toLocaleString()}</div><div class="ms">รายการ</div></div>
+      <div class="met t"><div class="ml">รวมทั้งหมด</div><div class="mv">${total.toLocaleString()}</div><div class="ms">รายการ</div></div>
+      <div class="met a"><div class="ml">รอรวม</div><div class="mv">${waiting.toLocaleString()}</div><div class="ms">ยังไม่ปิด</div></div>
+      <div class="met g"><div class="ml">ปิดรวม</div><div class="mv">${closed.toLocaleString()}</div><div class="ms">${total?Math.round(closed/total*100):0}%</div></div>
+    `;
+  }
+
+  function dashEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function bump(obj,key){key=(key||'ไม่ระบุ').trim()||'ไม่ระบุ';obj[key]=(obj[key]||0)+1;}
+  function normalizeType(v){
+    v = v || 'ไม่ระบุ';
+    if(v.includes('ติดตั้งใหม่'))return 'ติดตั้งใหม่';
+    if(v.includes('เพิ่มขนาด'))return 'เพิ่มขนาด';
+    if(v.includes('TOU'))return 'เปลี่ยนประเภท TOU';
+    if(v.includes('เปลี่ยน'))return 'เปลี่ยนประเภท';
+    return v || 'ไม่ระบุ';
+  }
+  function normalizeStatus(v){
+    v = v || '';
+    if(v.includes('ปิด'))return 'ปิดงาน';
+    if(v.includes('เปิดใบงาน'))return 'เปิดใบงานแล้ว';
+    if(v.includes('รอเปิด'))return 'รอเปิดใบงาน';
+    if(v.includes('รอ'))return 'รอดำเนินการ';
+    if(v.includes('ค้าง'))return 'ค้างจ่าย';
+    return v || 'อื่นๆ';
+  }
+  function monthBucket(r){
+    const p = parseDate(g(r,1));
+    if(!p || !p.m)return 'ไม่ระบุ';
+    return (MONTH_LABELS[p.m] || p.m) + ' ' + String(p.y || '').padStart(2,'0');
+  }
+  function collect(rows, fn){
+    const obj = {};
+    rows.forEach(r=>bump(obj, fn(r)));
+    return obj;
+  }
+  function bars(title,obj,limit,color){
+    const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||8);
+    if(!items.length)return `<div class="mini-chart"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></div>`;
+    const max = items[0][1] || 1;
+    return `<div class="mini-chart"><h3>${dashEsc(title)}</h3>` + items.map(([k,v])=>{
+      const pct = Math.max(4, Math.round(v / max * 100));
+      return `<div class="chart-row"><div class="chart-label" title="${dashEsc(k)}">${dashEsc(k)}</div><div class="chart-track"><div class="chart-fill" style="width:${pct}%;${color?'background:'+color:''}"></div></div><div class="chart-value">${v.toLocaleString()}</div></div>`;
+    }).join('') + `</div>`;
+  }
+
+  const mainType = collect(mainRows, r=>normalizeType(g(r,3)));
+  const mainWorker = collect(mainRows, r=>g(r,2));
+  const mainStatus = collect(mainRows, r=>normalizeStatus(g(r,11)));
+  const mainZone = collect(mainRows, r=>zoneVal(r));
+  const mainMonth = collect(mainRows, monthBucket);
+
+  const discSource = collect(discRows, r=>g(r,8));
+  const discStatus = collect(discRows, r=>normalizeStatus(g(r,11)));
+  const discWorker = collect(discRows, r=>g(r,2));
+  const discSize = collect(discRows, r=>g(r,5));
+  const discMonth = collect(discRows, monthBucket);
+
+  const chartEl = document.getElementById('dcharts');
+  if(chartEl){
+    chartEl.innerHTML = `
+      <div class="summary-section-title">งานจ่ายมิเตอร์</div>
+      <div class="chart-grid">
+        ${bars('สถานะงาน', mainStatus, 8, '#4a9eff')}
+        ${bars('ประเภทงาน', mainType, 8)}
+        ${bars('ผู้ปฏิบัติงาน', mainWorker, 10)}
+        ${bars('Zone', mainZone, 6)}
+        ${bars('เดือนที่ได้รับใบงาน', mainMonth, 8)}
+      </div>
+      <div class="summary-section-title">เลิกใช้ปกติ</div>
+      <div class="chart-grid">
+        ${bars('สถานะละเอียด', discStatus, 8, '#2dd4bf')}
+        ${bars('แหล่งข้อมูล', discSource, 4)}
+        ${bars('ผู้ปฏิบัติงาน', discWorker, 10)}
+        ${bars('ขนาดมิเตอร์', discSize, 8)}
+        ${bars('เดือนที่ได้รับใบงาน', discMonth, 8)}
+      </div>
+    `;
+  }
+}
+
+function showPg(name,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name==='guide')renderGuidePdfs();
+}
+
+// INIT
+function initAll() {
+  RAW = prepareRows(RAW);
+  AMI_ROWS = prepareRows(AMI_ROWS);
+  buildMets(document.getElementById('mets'), RAW);
+  doSearch();
+  renderAmi();
+  initPending();
+  initDaily();
+  buildDash();
+  renderSearchInsights();
+  if (typeof window.refreshSummaryFromLive === 'function') window.refreshSummaryFromLive();
+}
+
+async function syncData() {
+  var configuredUrl = (APPS_URL || '').trim();
+  var urls = [];
+  if (configuredUrl) urls.push(configuredUrl);
+  if (DEFAULT_APPS_URL && DEFAULT_APPS_URL !== configuredUrl) urls.push(DEFAULT_APPS_URL);
+
+  if (!urls.length) {
+    setSync('gray', 'ยังไม่ตั้งค่า Auto-sync · ไม่มีข้อมูลเก่าฝังไว้');
+    initAll();
+    return;
+  }
+  setSync('amber', 'กำลังโหลดข้อมูลสด...');
+  var lastErr = null;
+  try {
+    for (var i = 0; i < urls.length; i++) {
+      try {
+        var sourceUrl = urls[i];
+        var liveUrl = sourceUrl + (sourceUrl.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now();
+        var resp = await fetch(liveUrl, {cache: 'no-store'});
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var j = await resp.json();
+        if (!j.ok || !j.rows || !j.rows.length) throw new Error(j.error || 'ไม่มีข้อมูล');
+        AMI_ROWS = prepareRows(await loadAmiRows());
+        RAW = prepareRows(j.rows||[]);
+        APPS_URL = sourceUrl;
+        if (sourceUrl === DEFAULT_APPS_URL && configuredUrl && configuredUrl !== DEFAULT_APPS_URL) {
+          localStorage.removeItem('pea_api_url');
+        }
+        const reqCount = await attachRequestNumbers(RAW);
+        setSync('green', 'สด · ' + j.updated + ' · งานหลัก ' + RAW.length.toLocaleString() + ' · เลิกใช้ ' + AMI_ROWS.length.toLocaleString() + (reqCount ? ' · คำร้องพร้อมค้นหา' : ''));
+        initAll();
+        return;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error('โหลดข้อมูลไม่ได้');
+  } catch(err) {
+    RAW = [];
+    AMI_ROWS = [];
+    setSync('amber', 'โหลดข้อมูลสดไม่ได้ · ไม่มีข้อมูลเก่าฝังไว้ (' + err.message + ')');
+    await attachRequestNumbers(RAW);
+    initAll();
+  }
+}
+
+const REQUEST_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1YF2naY16qJ7rKUKfjXkVpEm-lidjAAMMSUhdTekHZ68/gviz/tq';
+const REQUEST_SHEET_NAME = '⚡2569 / 2026';
+
+function sheetCell(c){return c ? String(c.f != null ? c.f : (c.v != null ? c.v : '')).trim() : '';}
+
+function loadRequestMap(){
+  return new Promise((resolve,reject)=>{
+    const cb='peaReqCb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    const sc=document.createElement('script');
+    const done=()=>{delete window[cb];sc.remove();};
+    window[cb]=res=>{
+      try{
+        if(!res||res.status!=='ok'||!res.table)throw new Error('โหลดชีตคำร้องไม่ได้');
+        const map={};
+        (res.table.rows||[]).forEach(row=>{
+          const c=row.c||[];
+          const seq=sheetCell(c[0]);
+          const requestNo=sheetCell(c[3]);
+          if(seq&&requestNo)map[seq]=requestNo;
+        });
+        done();resolve(map);
+      }catch(e){done();reject(e);}
+    };
+    sc.onerror=()=>{done();reject(new Error('โหลดชีตคำร้องไม่ได้'));};
+    sc.src=REQUEST_SHEET_URL+'?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(REQUEST_SHEET_NAME)+'&_='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+
+async function attachRequestNumbers(rows){
+  try{
+    const reqMap=await loadRequestMap();
+    rows.forEach(r=>{const req=reqMap[g(r,0)];if(req)r[17]=req;});
+    return Object.keys(reqMap).length;
+  }catch(e){
+    console.warn('Request number sync skipped:', e.message);
+    return 0;
+  }
+}
+function setSync(color, label) {
+  var dot = document.getElementById('syncDot');
+  var lbl = document.getElementById('syncLbl');
+  if (!lbl) return;
+  var colors = { green:'#4ade80', amber:'#fbbf24', gray:'#555d70' };
+  dot.style.background = colors[color] || colors.gray;
+  dot.style.boxShadow  = color==='green' ? '0 0 5px #4ade80' : 'none';
+  lbl.textContent = label;
+}
+
+syncData();
+
+function countBy(arr, idx){
+  var o={}; arr.forEach(function(r){ var k=(r[idx]||'ไม่ระบุ').trim()||'ไม่ระบุ'; o[k]=(o[k]||0)+1; }); return o;
+}
+function countZonesOnly(arr){
+  var o={};
+  (arr||[]).forEach(function(r){
+    var z=zoneVal(r);
+    o[z]=(o[z]||0)+1;
+  });
+  return o;
+}
+function dataQualityCounts(arr){
+  var total=(arr||[]).length;
+  var noCoord=0, hasRemark=0, debt=0, hasReq=0, noReq=0, unknownZone=0;
+  (arr||[]).forEach(function(r){
+    var lat=g(r,9), lng=g(r,10), remark=g(r,12), req=g(r,17), status=g(r,11);
+    if(!lat||!lng||lat==='ไม่มีพิกัด'||lng==='ไม่มีพิกัด'||lat==='0'||lng==='0') noCoord++;
+    if(remark) hasRemark++;
+    if((remark+status).includes('ค้างจ่าย') || (remark+status).includes('ค้าง')) debt++;
+    if(req) hasReq++; else noReq++;
+    if(zoneVal(r)==='ไม่ระบุ') unknownZone++;
+  });
+  return {
+    'ไม่มีพิกัด': noCoord,
+    'มีหมายเหตุ': hasRemark,
+    'ค้างจ่าย': debt,
+    'มีเลขคำร้อง': hasReq,
+    'ไม่มีเลขคำร้อง': noReq,
+    'ไม่ระบุ Zone': unknownZone
+  };
+}
+function topItems(obj, max){
+  return Object.keys(obj).map(function(k){return [k,obj[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,max);
+}
+function barChart(title, items, total){
+  if(!items.length) return '';
+  return '<div class="mini-chart"><h3>'+title+'</h3>'+items.map(function(it){
+    var pct=total?Math.round((it[1]/total)*100):0;
+    return '<div class="chart-row"><div class="chart-label" title="'+it[0]+'">'+it[0]+'</div><div class="chart-track"><div class="chart-fill" style="width:'+pct+'%"></div></div><div class="chart-value">'+it[1]+'</div></div>';
+  }).join('')+'</div>';
+}
+function renderSearchInsights(){
+  var el=document.getElementById('searchInsights'); if(!el || !Array.isArray(RAW)) return;
+  var total=RAW.length;
+  if(!total){ el.innerHTML=''; return; }
+  var closed=RAW.filter(function(r){return (r[11]||'').indexOf('ปิด')>-1}).length;
+  var pending=total-closed;
+  var z=countZonesOnly(RAW), t=countBy(RAW,3), st={'ปิดงาน':closed,'รอดำเนินการ':pending}, dq=dataQualityCounts(RAW);
+  var html='<div class="chart-grid">'
+    +barChart('📌 สถานะงาน', topItems(st,3), total)
+    +barChart('🏷️ ประเภทงานสูงสุด', topItems(t,6), total)
+    +barChart('🗺️ งานตาม Zone', topItems(z,4), total)
+    +barChart('🔎 คุณภาพข้อมูล', topItems(dq,6), total)
+    +'</div>';
+  el.innerHTML=html;
+}
+
+/* SAFE SUMMARY ADDON - does not override openMo/doSearch/renderTable */
+(function(){
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function dateParts(s){
+    s=String(s||'').trim();
+    var m=s.match(/(\d{1,2})\s*([ก-ฮ.]+)\s*(\d{2,4})/);
+    if(m){
+      var map={'ม.ค.':'01','ก.พ.':'02','มี.ค.':'03','เม.ย.':'04','พ.ค.':'05','มิ.ย.':'06','ก.ค.':'07','ส.ค.':'08','ก.ย.':'09','ต.ค.':'10','พ.ย.':'11','ธ.ค.':'12'};
+      var yy=m[3].length===2?'20'+m[3]:m[3], mm=map[m[2]]||'', dd=String(m[1]).padStart(2,'0');
+      if(mm) return {date:yy+'-'+mm+'-'+dd, month:yy+'-'+mm, label:dd+' '+m[2]+' '+String(yy).slice(-2)};
+    }
+    var d=new Date(s);
+    if(!isNaN(d.getTime())){
+      var names=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+      var yy2=d.getFullYear(), mm2=String(d.getMonth()+1).padStart(2,'0'), dd2=String(d.getDate()).padStart(2,'0');
+      return {date:yy2+'-'+mm2+'-'+dd2, month:yy2+'-'+mm2, label:dd2+' '+names[d.getMonth()]+' '+String(yy2).slice(-2)};
+    }
+    return null;
+  }
+  function monthLabel(k){
+    var names={'01':'ม.ค.','02':'ก.พ.','03':'มี.ค.','04':'เม.ย.','05':'พ.ค.','06':'มิ.ย.','07':'ก.ค.','08':'ส.ค.','09':'ก.ย.','10':'ต.ค.','11':'พ.ย.','12':'ธ.ค.'};
+    var p=String(k||'').split('-');
+    return p.length===2 ? (names[p[1]]||p[1])+' '+p[0].slice(-2) : '-';
+  }
+  function isClosed(r){return String((r||[])[11]||'').indexOf('ปิด')>=0;}
+  function hasCoord(r){
+    var lat=String((r||[])[9]||'').trim(), lng=String((r||[])[10]||'').trim();
+    return !!(lat&&lng&&lat!=='ไม่มีพิกัด'&&lng!=='ไม่มีพิกัด'&&!isNaN(parseFloat(lat))&&!isNaN(parseFloat(lng)));
+  }
+  function countBy(rows,idx){
+    var o={}; (rows||[]).forEach(function(r){var k=String(r[idx]||'ไม่ระบุ').trim()||'ไม่ระบุ';o[k]=(o[k]||0)+1;}); return o;
+  }
+  function countZone(rows){
+    var o={}; (rows||[]).forEach(function(r){var z=zoneVal(r);o[z]=(o[z]||0)+1;}); return o;
+  }
+  function top(obj,n){
+    return Object.keys(obj||{}).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,n||8);
+  }
+  function bars(title,obj){
+    var items=top(obj,8), max=items.length?items[0][1]:1;
+    var rows=items.map(function(it){
+      return '<div class="chart-row"><div class="chart-label">'+esc(it[0])+'</div><div class="chart-track"><div class="chart-fill" style="width:'+Math.max(4,Math.round(it[1]/max*100))+'%"></div></div><div class="chart-value">'+it[1]+'</div></div>';
+    }).join('');
+    return '<div class="mini-chart"><h3>'+esc(title)+'</h3>'+(rows||'<div class="empty">ไม่มีข้อมูล</div>')+'</div>';
+  }
+  function summaryHtml(rows,title){
+    rows=rows||[];
+    var total=rows.length, closed=rows.filter(isClosed).length, pending=total-closed, noCoord=rows.filter(function(r){return !hasCoord(r);}).length;
+    var byType=countBy(rows,3), byZone=countZone(rows), byWorker=countBy(rows,2);
+    var topType=top(byType,1)[0]||['-',0], topWorker=top(byWorker,1)[0]||['-',0];
+    return '<div class="summary-section-title">'+title+'</div>'+
+      '<div class="quick-summary">'+
+      '<div class="qs-card"><div class="qs-label">งานทั้งหมด</div><div class="qs-value">'+total.toLocaleString()+'</div><div class="qs-note">รายการ</div></div>'+
+      '<div class="qs-card g"><div class="qs-label">ปิดงาน</div><div class="qs-value">'+closed.toLocaleString()+'</div><div class="qs-note">'+(total?Math.round(closed/total*100):0)+'%</div></div>'+
+      '<div class="qs-card a"><div class="qs-label">รอดำเนินการ</div><div class="qs-value">'+pending.toLocaleString()+'</div><div class="qs-note">ยังไม่ปิด</div></div>'+
+      '<div class="qs-card r"><div class="qs-label">ไม่มีพิกัด</div><div class="qs-value">'+noCoord.toLocaleString()+'</div><div class="qs-note">ไม่ขึ้นแผนที่</div></div>'+
+      '<div class="qs-card p"><div class="qs-label">ประเภทสูงสุด</div><div class="qs-value" style="font-size:18px">'+esc(topType[0])+'</div><div class="qs-note">'+topType[1].toLocaleString()+' รายการ</div></div>'+
+      '<div class="qs-card"><div class="qs-label">ผู้ปฏิบัติงานสูงสุด</div><div class="qs-value" style="font-size:18px">'+esc(topWorker[0])+'</div><div class="qs-note">'+topWorker[1].toLocaleString()+' รายการ</div></div>'+
+      '</div><div class="chart-grid">'+bars('ประเภทงาน',byType)+bars('Zone',byZone)+bars('ผู้ปฏิบัติงาน',byWorker)+'</div>';
+  }
+  function initPickers(){
+    var dayEl=document.getElementById('dayPick'), monthEl=document.getElementById('monthPick');
+    if(!dayEl&&!monthEl) return;
+    var days={}, months={};
+    (window.RAW||[]).forEach(function(r){
+      var p=dateParts(r[1]);
+      if(p){ if(!days[p.date]) days[p.date]={label:p.label,count:0}; days[p.date].count++; months[p.month]=true; }
+    });
+    var dayKeys=Object.keys(days).sort(), monthKeys=Object.keys(months).sort();
+    if(dayEl){
+      var old=dayEl.value;
+      dayEl.innerHTML=dayKeys.map(function(k){return '<option value="'+k+'">'+days[k].label+' ('+days[k].count+' งาน)</option>';}).join('');
+      dayEl.value=days[old]?old:(dayKeys[dayKeys.length-1]||'');
+    }
+    if(monthEl){
+      var oldm=monthEl.value;
+      monthEl.innerHTML=monthKeys.map(function(k){return '<option value="'+k+'">'+monthLabel(k)+'</option>';}).join('');
+      monthEl.value=months[oldm]?oldm:(monthKeys[monthKeys.length-1]||'');
+    }
+  }
+  function dailyRows(){
+    var el=document.getElementById('dayPick');
+    if(!el||!el.value) return [];
+    return (window.RAW||[]).filter(function(r){var p=dateParts(r[1]); return p&&p.date===el.value;});
+  }
+  function badge(st){
+    st=String(st||'').trim();
+    if(st.indexOf('ปิด')>=0) return '<span class="badge bg">ปิดงาน</span>';
+    return '<span class="badge ba">'+esc(st||'รอดำเนินการ')+'</span>';
+  }
+  function dailyTable(rows){
+    if(!rows.length) return '<div class="summary-section-title">📋 รายการงานของวันที่เลือก</div><div class="tw"><div class="empty">ไม่มีรายการงานในวันนี้</div></div>';
+    var body=rows.map(function(r){
+      var idx=(window.RAW||[]).indexOf(r);
+      return '<tr data-seq="'+esc(r[0])+'" class="' + (isQueued(r)?'print-selected':'') + '" onclick="openMo('+idx+')">'+
+        queueCell(r)+
+        '<td class="mono">'+esc(r[0])+'</td>'+
+        '<td><b>'+esc(r[2]||'-')+'</b><div class="cell-addr">'+esc(r[1]||'-')+'</div></td>'+
+        '<td>'+esc(r[3]||'-')+'</td>'+
+        '<td class="mono" style="color:var(--teal)">'+esc(r[4]||'-')+'</td>'+
+        '<td>'+esc(r[5]||'-')+'</td>'+
+        '<td><div class="cell-name">'+esc(r[13]||'-')+'</div><div class="cell-addr">'+esc(r[14]||'-')+'</div></td>'+
+        '<td>'+badge(r[11])+'</td>'+
+      '</tr>';
+    }).join('');
+    return '<div class="summary-section-title">📋 รายการงานของวันที่เลือก · '+rows.length.toLocaleString()+' รายการ</div>'+
+      '<div class="tw summary-job-table"><table><thead><tr><th class="print-col">พิมพ์</th><th>#</th><th>ผู้ปฏิบัติ / วันที่</th><th>ประเภทงาน</th><th>มิเตอร์ใหม่ (PEA)</th><th>ขนาด</th><th>ชื่อ / ที่อยู่</th><th>สถานะ</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+
+  window.renderSummaryDaily=function(){
+    var box=document.getElementById('summaryDaily');
+    if(!box) return;
+    var el=document.getElementById('dayPick');
+    if(!el||!el.value){ box.innerHTML='<div class="summary-alert">ยังไม่มีวันที่ให้เลือก</div>'; return; }
+    var rows=dailyRows();
+    var label=(el.options[el.selectedIndex]&&el.options[el.selectedIndex].textContent||el.value).replace(/\s*\(\d+\s*งาน\)\s*$/,'');
+    box.innerHTML=summaryHtml(rows,'📅 สรุปรายวัน · '+label)+dailyTable(rows);
+  };
+  window.renderSummaryMonthly=function(){
+    var box=document.getElementById('summaryMonthly');
+    if(!box) return;
+    var el=document.getElementById('monthPick');
+    if(!el||!el.value){ box.innerHTML='<div class="summary-alert">ยังไม่มีเดือนให้เลือก</div>'; return; }
+    var rows=(window.RAW||[]).filter(function(r){var p=dateParts(r[1]); return p&&p.month===el.value;});
+    box.innerHTML=summaryHtml(rows,'📆 สรุปรายเดือน · '+monthLabel(el.value));
+  };
+
+  var oldShow=window.showPg;
+  window.refreshSummaryFromLive=function(){
+    initPickers();
+    window.renderSummaryMonthly();
+    window.renderSummaryDaily();
+  };
+  if(typeof oldShow==='function'){
+    window.showPg=function(id,btn){
+      oldShow(id,btn);
+      if(id==='daily'){ window.refreshSummaryFromLive(); }
+    };
+  }
+
+  window.addEventListener('load',function(){
+    setTimeout(function(){ window.refreshSummaryFromLive(); },500);
+  });
+})();
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
+</script>
+<script>
+let mapInst=null, markerLayer=null, mapInited=false;
+
+function initMap(){
+  if(mapInited) return;
+  mapInited=true;
+  setTimeout(()=>{
+    mapInst = L.map('mapEl').setView([12.947, 100.921], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap',maxZoom:19
+    }).addTo(mapInst);
+
+  // Zone overlay polygons (approximate bounding boxes from real data)
+  var z1Bounds = [
+    [12.955, 100.856], [12.955, 101.018],
+    [13.048, 101.018], [13.048, 100.856]
+  ];
+  var z2Bounds = [
+    [12.883, 100.856], [12.883, 101.000],
+    [12.955, 101.000], [12.955, 100.856]
+  ];
+
+  var z1Layer = L.polygon(z1Bounds, {
+    color:'#60a5fa', weight:2, opacity:0.8,
+    fillColor:'#60a5fa', fillOpacity:0.06,
+    dashArray:'6,4'
+  }).addTo(mapInst).bindTooltip(
+    '<div style="font-family:IBM Plex Sans Thai,sans-serif;font-size:12px;font-weight:500;color:#1e3a5f;padding:2px 4px">Zone 1</div>',
+    {permanent:true, direction:'center', className:'zone-label'}
+  );
+
+  var z2Layer = L.polygon(z2Bounds, {
+    color:'#c084fc', weight:2, opacity:0.8,
+    fillColor:'#c084fc', fillOpacity:0.06,
+    dashArray:'6,4'
+  }).addTo(mapInst).bindTooltip(
+    '<div style="font-family:IBM Plex Sans Thai,sans-serif;font-size:12px;font-weight:500;color:#4a1d96;padding:2px 4px">Zone 2</div>',
+    {permanent:true, direction:'center', className:'zone-label'}
+  );
+
+  // Toggle zone overlays with filter
+  window._z1Layer = z1Layer;
+  window._z2Layer = z2Layer;
+
+    markerLayer = L.layerGroup().addTo(mapInst);
+    filterMap();
+    setTimeout(()=>mapInst.invalidateSize(),200);
+  },50);
+}
+
+function mkZoneIcon(fill, ring){
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">'
+    +'<circle cx="9" cy="9" r="8" fill="'+fill+'" stroke="'+ring+'" stroke-width="2.5"/>'
+    +'<circle cx="9" cy="9" r="3.5" fill="rgba(255,255,255,0.7)"/>'
+    +'</svg>';
+  return L.divIcon({
+    html:'<div style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.4))">'+svg+'</div>',
+    iconSize:[18,18],iconAnchor:[9,9],popupAnchor:[0,-12],
+    className:''
+  });
+}
+
+function filterMap(){
+  if(!mapInst) return;
+  const fst=document.getElementById('mfst').value;
+  const ftype=document.getElementById('mftype').value;
+  const fzone=document.getElementById('mfzone').value;
+
+  markerLayer.clearLayers();
+  let count=0;
+
+  RAW.forEach((r,idx)=>{
+    const lat=parseFloat(g(r,9)), lng=parseFloat(g(r,10));
+    if(!lat||!lng||isNaN(lat)||isNaN(lng)) return;
+    const s=g(r,11);
+    if(fst&&!s.includes(fst)) return;
+    if(ftype&&!g(r,3).includes(ftype)) return;
+    if(fzone&&zoneVal(r)!==fzone) return;
+
+    // Zone color: Z1=blue circle, Z2=purple circle, overlay with status
+    const z=zoneVal(r);
+    const zoneColor = z==='1' ? '#60a5fa' : z==='2' ? '#c084fc' : '#94a3b8';
+    const statusRing = s.includes('ปิด') ? '#4ade80' : s.includes('ค้าง') ? '#f87171' : '#fbbf24';
+    const icon = mkZoneIcon(zoneColor, statusRing);
+    const name=g(r,13)||'ไม่ระบุ';
+    const mru=g(r,16);
+    const addr=g(r,14);
+    const addrShort=addr.length>50?addr.slice(0,48)+'…':addr;
+
+    const popup=`<div class="map-popup">
+      <div class="mp-name">${name}</div>
+      <div class="mp-badges">
+        <span class="badge ${bc(s)}">${bl(s)}</span>
+        <span class="badge bgr">${z==='ไม่ระบุ'?'ไม่ระบุ':'Zone '+z}</span>
+      </div>
+      ${mru?`<div class="mp-row"><span class="mp-label">MRU</span><span class="mp-val amber">${mru}</span></div>`:''}
+      <div class="mp-row"><span class="mp-label">มิเตอร์</span><span class="mp-val teal">${g(r,4)||'—'}</span></div>
+      <div class="mp-row"><span class="mp-label">ประเภทงาน</span><span class="mp-val">${g(r,3)||'—'}</span></div>
+      <div class="mp-row"><span class="mp-label">ผู้ปฏิบัติ</span><span class="mp-val">${g(r,2)||'—'}</span></div>
+      <div class="mp-row"><span class="mp-label">วันที่</span><span class="mp-val">${fmtDate(g(r,1))}</span></div>
+      ${addrShort?`<div class="mp-row"><span class="mp-label">ที่อยู่</span><span class="mp-val">${addrShort}</span></div>`:''}
+      <a class="mp-gmap" href="https://maps.google.com/?q=${lat},${lng}" target="_blank">📍 เปิดใน Google Maps</a>
+    </div>`;
+
+    L.marker([lat,lng],{icon}).addTo(markerLayer).bindPopup(popup,{maxWidth:300,minWidth:260});
+    count++;
+  });
+
+  document.getElementById('mapCount').textContent=`แสดง ${count.toLocaleString()} pin`;
+}
+
+</script>
+
+
+<script>
+var _printRow = null;
+function doPrint() {
+  var r = _printRow;
+  if (!r) { alert('ไม่พบข้อมูล'); return; }
+  var s = g(r,11), name = g(r,13) || '(ไม่มีชื่อ)';
+  var lat = g(r,9), lng = g(r,10);
+  var hasGps = lat && lng && lat !== '0' && lng !== '0';
+  var mru = g(r,16) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
+  var bc2 = s.indexOf('ปิด')>=0 ? 'green' : s.indexOf('รอ')>=0 ? 'amber' : 'gray';
+  var bt  = s.indexOf('ปิด')>=0 ? 'ปิดงาน' : s.indexOf('รอ')>=0 ? 'รอดำเนินการ' : (s||'ไม่ระบุ');
+  var now = fmtPrintNow();
+  var c = '';
+  c += '<div class="print-sheet">';
+  c += '<div class="print-header"><div>';
+  c += '<div class="print-logo">PEA METER · บางละมุง</div>';
+  c += '<div class="print-title">' + name + '</div>';
+  c += '<div class="print-badges"><span class="print-badge ' + bc2 + '">' + bt + '</span>';
+  var z = zoneVal(r);
+  c += '<span class="print-badge gray">' + (z === 'ไม่ระบุ' ? 'ไม่ระบุ' : 'Zone ' + z) + '</span>';
+  if (g(r,3)) c += '<span class="print-badge gray">' + g(r,3) + '</span>';
+  c += '</div></div>';
+  c += '<div style="text-align:right;font-size:11px;color:#6b7280">';
+  c += '<div>พิมพ์: ' + now + '</div><div>ลำดับที่ ' + g(r,0) + '</div></div></div>';
+  if (requestNo || mru) {
+    c += '<div class="print-mru">';
+    c += '<div class="print-mru-item req"><div class="print-mru-label">เลขที่คำร้อง</div><div class="print-mru-val">' + (requestNo || '—') + '</div></div>';
+    c += '<div class="print-mru-item"><div class="print-mru-label">MRU</div><div class="print-mru-val">' + (mru || '—') + '</div></div>';
+    c += '</div>';
+  }
+  c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลงาน</div><div class="print-grid">';
+  c += '<div class="print-field"><div class="print-field-label">วันที่จ่ายงาน</div><div class="print-field-val">'+fmtDate(g(r,1))+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ผู้ปฏิบัติงาน</div><div class="print-field-val">'+(g(r,2)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ประเภทงาน</div><div class="print-field-val">'+(g(r,3)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาดมิเตอร์</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลมิเตอร์</div><div class="print-grid">';
+  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:15px">'+(g(r,4)||'—')+'</div></div>';
+  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์เก่า (PEA)</div><div class="print-field-val mono">'+(g(r,7)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่นมิเตอร์</div><div class="print-field-val">'+(g(r,6)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาด / Phase</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่และการติดต่อ</div><div class="print-grid">';
+  c += '<div class="print-field full"><div class="print-field-label">ที่อยู่สถานที่ใช้ไฟ</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">เบอร์โทรศัพท์</div><div class="print-field-val">'+(g(r,15)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">พิกัด GPS</div><div class="print-field-val mono" style="font-size:11px">'+(hasGps ? lat+', '+lng : '—')+'</div></div>';
+  c += '</div></div>';
+  if (rmk) {
+    c += '<div class="print-sec"><div class="print-sec-title">หมายเหตุ</div>';
+    c += '<div class="print-field full"><div class="print-field-val">'+rmk+'</div></div></div>';
+  }
+  c += '<div class="print-footer"><span>PEA อ.บางละมุง จ.ชลบุรี</span><span>พิมพ์เมื่อ '+now+'</span></div>';
+  c += '</div>';
+  var pa = document.getElementById('printArea');
+  // Single slip: place in top-left quarter of A4
+  pa.innerHTML = '<div class="print-page"><div>' + c + '</div><div></div><div></div><div></div></div>';
+  pa.style.display = 'block';
+  window.print();
+  pa.style.display = 'none';
+}
+
+</script>
+
+<script>
+var printSelectedRows = [];
+
+function toggleQueueRow(seq, e) {
+  if (e) e.stopPropagation();
+  var r = (RAW || []).find(function(x){ return g(x,0) === String(seq); });
+  if (r) toggleQueueRowData(r);
+}
+
+function toggleQueueRowData(r) {
+  if (!r) return;
+  var seq = g(r,0);
+  var idx = printSelectedRows.findIndex(function(x){ return g(x,0) === seq; });
+  if (idx >= 0) {
+    printSelectedRows.splice(idx, 1);
+  } else {
+    if (printSelectedRows.length >= 4) {
+      alert('เลือกได้สูงสุด 4 งาน (1 แผ่น A4)');
+      return;
+    }
+    printSelectedRows.push(r);
+  }
+  updateQueueBar();
+  var btn = document.getElementById('queueToggleBtn');
+  if (btn && _printRow && g(_printRow,0) === seq) {
+    var inQ = printSelectedRows.some(function(x){ return g(x,0) === seq; });
+    btn.className = 'select-print-btn' + (inQ ? ' selected' : '');
+    btn.innerHTML = '☑️ ' + (inQ ? 'ถูกเลือกแล้ว (' + printSelectedRows.length + '/4)' : 'เลือกพิมพ์พร้อมกัน');
+  }
+}
+
+function toggleQueue() {
+  toggleQueueRowData(_printRow);
+}
+
+function queueEsc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function queueLabel(r) {
+  var seq = g(r,0) || '-';
+  var req = g(r,17);
+  var mru = g(r,16);
+  var main = req || g(r,4) || seq;
+  return '<span class="pq-chip" title="ลำดับ ' + queueEsc(seq) + (req ? ' · คำร้อง ' + queueEsc(req) : '') + (mru ? ' · MRU ' + queueEsc(mru) : '') + '"><b>#' + queueEsc(seq) + '</b><span>' + queueEsc(main) + '</span>' + (mru ? '<span>· ' + queueEsc(mru) + '</span>' : '') + '</span>';
+}
+
+function refreshQueueHighlights() {
+  document.querySelectorAll('tbody tr[data-seq]').forEach(function(row){
+    var seq = row.getAttribute('data-seq');
+    var on = printSelectedRows.some(function(r){ return g(r,0) === seq; });
+    row.classList.toggle('print-selected', on);
+  });
+}
+
+function updateQueueBar() {
+  var bar = document.getElementById('pqBar');
+  var cnt = document.getElementById('pqCount');
+  var list = document.getElementById('pqList');
+  cnt.textContent = printSelectedRows.length;
+  if (list) list.innerHTML = printSelectedRows.map(queueLabel).join('');
+  bar.style.display = printSelectedRows.length > 0 ? 'flex' : 'none';
+  refreshQueueHighlights();
+}
+
+function clearQueue() {
+  printSelectedRows = [];
+  updateQueueBar();
+}
+
+function buildSlip(r, corner) {
+  var s = g(r,11), name = g(r,13) || '(ไม่มีชื่อ)';
+  var lat = g(r,9), lng = g(r,10);
+  var hasGps = lat && lng && lat !== '0' && lng !== '0';
+  var mru = g(r,16) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
+  var bc2 = s.indexOf('ปิด')>=0 ? 'green' : s.indexOf('รอ')>=0 ? 'amber' : 'gray';
+  var bt  = s.indexOf('ปิด')>=0 ? 'ปิดงาน' : s.indexOf('รอ')>=0 ? 'รอดำเนินการ' : (s||'ไม่ระบุ');
+  var now = fmtPrintNow();
+  var c = '<div class="print-sheet">';
+  c += '<div class="print-corner-label">' + corner + '</div>';
+  c += '<div class="print-header"><div>';
+  c += '<div class="print-logo">PEA METER · บางละมุง</div>';
+  c += '<div class="print-title">' + name + '</div>';
+  c += '<div class="print-badges"><span class="print-badge ' + bc2 + '">' + bt + '</span>';
+  var z = zoneVal(r);
+  c += '<span class="print-badge gray">' + (z === 'ไม่ระบุ' ? 'ไม่ระบุ' : 'Zone ' + z) + '</span>';
+  if (g(r,3)) c += '<span class="print-badge gray">' + g(r,3) + '</span>';
+  c += '</div></div>';
+  c += '<div class="print-meta">พิมพ์: ' + now + '<br>ลำดับที่ ' + g(r,0) + '</div></div>';
+  if (requestNo || mru) {
+    c += '<div class="print-mru">';
+    c += '<div class="print-mru-item req"><div class="print-mru-label">เลขที่คำร้อง</div><div class="print-mru-val">' + (requestNo || '—') + '</div></div>';
+    c += '<div class="print-mru-item"><div class="print-mru-label">MRU</div><div class="print-mru-val">' + (mru || '—') + '</div></div>';
+    c += '</div>';
+  }
+  c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลงาน</div><div class="print-grid">';
+  c += '<div class="print-field"><div class="print-field-label">วันที่จ่ายงาน</div><div class="print-field-val">'+fmtDate(g(r,1))+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ผู้ปฏิบัติงาน</div><div class="print-field-val">'+(g(r,2)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ประเภทงาน</div><div class="print-field-val">'+(g(r,3)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาด</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">มิเตอร์</div><div class="print-grid">';
+  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:11px">'+(g(r,4)||'—')+'</div></div>';
+  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์เก่า (PEA)</div><div class="print-field-val mono">'+(g(r,7)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่น</div><div class="print-field-val">'+(g(r,6)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">Phase</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่</div><div class="print-grid">';
+  c += '<div class="print-field full"><div class="print-field-label">ที่อยู่</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">โทร</div><div class="print-field-val">'+(g(r,15)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">GPS</div><div class="print-field-val mono" style="font-size:8px">'+(hasGps ? lat+', '+lng : '—')+'</div></div>';
+  c += '</div></div>';
+  if (rmk) {
+    c += '<div class="print-sec"><div class="print-sec-title">หมายเหตุ</div>';
+    c += '<div class="print-field full"><div class="print-field-val">'+rmk+'</div></div></div>';
+  }
+  c += '<div class="print-footer"><span>PEA อ.บางละมุง จ.ชลบุรี</span><span>#'+g(r,0)+'</span></div>';
+  c += '</div>';
+  return c;
+}
+
+function printQueue() {
+  var n = printSelectedRows.length;
+  if (n === 0) { alert('ยังไม่ได้เลือกงาน'); return; }
+
+  // Layout rules:
+  // 1 slip  → top-left only (grid 2x2, slot 0 filled)
+  // 2 slips → top row only (grid 2x1, slots 0+1)
+  // 3 slips → top-left, top-right, bottom-left (grid 2x2, slots 0+1+2)
+  // 4 slips → all four corners (grid 2x2)
+
+  var pa = document.getElementById('printArea');
+  var html = '';
+
+  if (n === 1) {
+    // 1 slip: top-left quarter, rest empty
+    html += '<div class="print-page">';
+    html += buildSlip(printSelectedRows[0], '');
+    html += '<div></div><div></div><div></div>';
+    html += '</div>';
+
+  } else if (n === 2) {
+    // 2 slips: top half — 1 row, 2 columns
+    html += '<div class="print-page" style="grid-template-rows:1fr;height:auto">';
+    html += buildSlip(printSelectedRows[0], '');
+    html += buildSlip(printSelectedRows[1], '');
+    html += '</div>';
+
+  } else if (n === 3) {
+    // 3 slips: top-left, top-right, bottom-left
+    html += '<div class="print-page">';
+    html += buildSlip(printSelectedRows[0], '');
+    html += buildSlip(printSelectedRows[1], '');
+    html += buildSlip(printSelectedRows[2], '');
+    html += '<div></div>';
+    html += '</div>';
+
+  } else {
+    // 4 slips: all corners
+    html += '<div class="print-page">';
+    for (var i = 0; i < 4; i++) {
+      html += buildSlip(printSelectedRows[i], '');
+    }
+    html += '</div>';
+  }
+
+  pa.innerHTML = html;
+  pa.style.display = 'block';
+  window.print();
+  pa.style.display = 'none';
+}
+
+</script>
+
+<script>
+// Init API URL input
+(function(){
+  var el = document.getElementById('apiInp');
+  if (el) el.value = localStorage.getItem('pea_api_url') || DEFAULT_APPS_URL;
+})();
+
+function saveUrl() {
+  var url = (document.getElementById('apiInp').value || '').trim();
+  var msg = document.getElementById('apiMsg');
+  localStorage.setItem('pea_api_url', url);
+  APPS_URL = url;
+  if (!url) {
+    msg.style.color = 'var(--amber)'; msg.textContent = 'ล้างค่าแล้ว';
+    return;
+  }
+  msg.style.color = 'var(--t3)'; msg.textContent = 'กำลังทดสอบ...';
+  var testUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now();
+  fetch(testUrl, {cache: 'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(async function(j){
+      if (!j.ok) throw new Error(j.error || 'ข้อมูลผิดพลาด');
+      RAW = prepareRows(j.rows);
+      AMI_ROWS = prepareRows(await loadAmiRows());
+      msg.style.color='var(--green)';
+      msg.textContent = '✓ เชื่อมต่อสำเร็จ! งานหลัก ' + RAW.length.toLocaleString() + ' รายการ · เลิกใช้ ' + AMI_ROWS.length.toLocaleString() + ' · อัปเดต ' + j.updated;
+      setSync('green', 'สด · ' + j.updated + ' · งานหลัก ' + RAW.length.toLocaleString() + ' · เลิกใช้ ' + AMI_ROWS.length.toLocaleString());
+      initAll();
+    })
+    .catch(function(e){
+      msg.style.color='var(--red)';
+      msg.textContent = '✗ ' + e.message + ' — ตรวจสอบ URL หรือ permission';
+    });
+}
+
+</script>
+<script>
+var _unlocked = false;
+
+function askPassword(btn) {
+  if (_unlocked) {
+    showPg('settings', btn);
+    return;
+  }
+  var pw = prompt('รหัสผ่าน:');
+  if (pw === null) return;
+  if (pw === 'Peapty2026') {
+    _unlocked = true;
+    btn.style.color = '';
+    btn.innerHTML = '⚙️ ตั้งค่า';
+    showPg('settings', btn);
+  } else {
+    alert('รหัสผ่านไม่ถูกต้อง');
+  }
+}
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
