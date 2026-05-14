@@ -98,6 +98,29 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 .mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center;padding:16px}
 .mo.on{display:flex}
 .mbox{background:var(--bg2);border:1px solid var(--b2);border-radius:14px;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;padding:22px;animation:su .18s ease}
+.mbox.with-images{max-width:980px}
+.modal-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+.modal-main{min-width:0}
+.job-images{position:sticky;top:0;border-left:1px solid var(--b);padding-left:16px;max-height:calc(88vh - 44px);overflow:auto}
+.job-images-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.job-images-title{font-size:12px;font-weight:600;color:var(--t)}
+.job-images-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--teal);background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.24);border-radius:99px;padding:2px 7px}
+.job-image-list{display:flex;flex-direction:column;gap:10px}
+.job-image-card{display:block;width:100%;border:1px solid var(--b2);border-radius:var(--r);background:var(--bg3);overflow:hidden;text-decoration:none;color:var(--t);transition:border-color .15s,transform .15s;cursor:pointer;text-align:left;font-family:inherit}
+.job-image-card:hover{border-color:var(--blue);transform:translateY(-1px)}
+.job-image-card img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg)}
+.job-image-caption{display:block;padding:8px 10px;font-size:12px;line-height:1.45;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.job-image-empty{border:1px dashed var(--b2);border-radius:var(--r);padding:18px 12px;color:var(--t3);font-size:12px;line-height:1.7;text-align:center;background:rgba(255,255,255,.02)}
+.image-viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,.86);z-index:360;padding:18px;align-items:center;justify-content:center}
+.image-viewer.on{display:flex}
+.image-viewer-box{width:min(1100px,96vw);height:min(860px,92vh);display:flex;flex-direction:column;gap:10px}
+.image-viewer-bar{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--b2);border-radius:var(--r);padding:10px 12px}
+.image-viewer-title{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.image-viewer-spacer{flex:1}
+.image-viewer-open{color:var(--blue);border:1px solid rgba(74,158,255,.35);background:var(--bluebg);border-radius:var(--rs);padding:7px 10px;font-size:12px;text-decoration:none;white-space:nowrap}
+.image-viewer-close{background:var(--bg3);border:0;width:30px;height:30px;border-radius:50%;color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.image-viewer-close:hover{color:var(--t)}
+.image-viewer-img{min-height:0;flex:1;width:100%;object-fit:contain;border-radius:var(--r);background:#05070b;border:1px solid var(--b2)}
 @keyframes su{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 .mh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
 .mt{font-size:15px;font-weight:600;flex:1;padding-right:12px;line-height:1.4}
@@ -150,6 +173,12 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
   .main{padding:12px}
   .hd{padding:0 12px}
   .nav{padding:0 12px}
+  .mbox.with-images{max-width:100%}
+  .modal-layout{grid-template-columns:1fr}
+  .job-images{position:static;border-left:0;border-top:1px solid var(--b);padding-left:0;padding-top:14px;max-height:none}
+  .image-viewer{padding:8px}
+  .image-viewer-box{height:94vh}
+  .image-viewer-open{display:none}
 }
 
 /* MAP */
@@ -395,6 +424,38 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 .chart-track{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden}
 .chart-fill{height:100%;background:var(--blue);border-radius:99px}
 .chart-value{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);text-align:right}
+.dash-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.dash-kpi{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01));border:1px solid var(--b);border-radius:var(--r);padding:14px;min-height:108px;position:relative;overflow:hidden}
+.dash-kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.dash-kpi.g:before{background:var(--green)}.dash-kpi.a:before{background:var(--amber)}.dash-kpi.r:before{background:var(--red)}.dash-kpi.t:before{background:var(--teal)}.dash-kpi.p:before{background:var(--purple)}
+.dash-kpi-label{font-size:11px;color:var(--t2);margin-bottom:8px}
+.dash-kpi-value{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;line-height:1;color:var(--t)}
+.dash-kpi-note{font-size:11px;color:var(--t3);margin-top:7px}
+.dash-board-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.dash-panel{background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:14px;min-height:190px}
+.dash-panel.wide{grid-column:span 2}.dash-panel.tall{grid-row:span 2}
+.dash-panel h3{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--t)}
+.dash-panel-sub{font-size:11px;color:var(--t3);margin-top:-5px;margin-bottom:10px}
+.dash-bar-row{display:grid;grid-template-columns:92px 1fr 42px;align-items:center;gap:8px;margin:8px 0}
+.dash-bar-label{font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dash-bar-track{height:8px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.dash-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.dash-bar-value{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);text-align:right}
+.donut-wrap{display:flex;align-items:center;gap:14px;min-height:136px}
+.donut{width:128px;height:128px;border-radius:50%;background:conic-gradient(var(--blue) 0 40%,var(--green) 40% 70%,var(--amber) 70% 88%,var(--purple) 88% 100%);position:relative;flex:0 0 auto}
+.donut:after{content:"";position:absolute;inset:28px;background:var(--bg2);border-radius:50%;border:1px solid var(--b)}
+.donut-legend{display:flex;flex-direction:column;gap:7px;min-width:0}
+.donut-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--t2)}
+.donut-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.sparkline{height:120px;display:flex;align-items:end;gap:6px;padding-top:12px}
+.spark-bar{flex:1;min-width:8px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--purple),var(--blue));position:relative}
+.spark-bar span{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);margin-bottom:3px}
+.dash-table{width:100%;min-width:0}
+.dash-table td{padding:6px 0;border-bottom:1px solid var(--b);font-size:11px}
+.dash-table tr:last-child td{border-bottom:0}
+.dash-table td:last-child{text-align:right;font-family:'IBM Plex Mono',monospace;color:var(--teal)}
+@media(max-width:1100px){.dash-board-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.dash-board-grid{grid-template-columns:1fr}.dash-panel.wide,.dash-panel.tall{grid-column:auto;grid-row:auto}.donut-wrap{flex-direction:column;align-items:flex-start}}
 
 
 /* SAFE SUMMARY ADDON - no popup/search override */
@@ -436,6 +497,7 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
   <button class="tab" onclick="showPg('guide',this)">📘 คู่มือ</button>
   <button class="tab" onclick="showPg('pending',this)">⏳ งานค้าง</button>
   <button class="tab" onclick="showPg('daily',this)">📊 สรุป</button>
+  <button class="tab" onclick="showPg('dash',this)">📈 แดชบอร์ด</button>
   <button class="tab" onclick="showPg('map',this);initMap()">🗺️ แผนที่</button>
   <button class="tab" id="settingsTab" onclick="askPassword(this)" style="color:var(--t3)">⚙️</button>
 </div>
@@ -692,10 +754,10 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 <!-- ══ DASHBOARD PAGE ══ -->
 <div class="pg" id="pg-dash">
   <div class="help-box">
-    <div class="help-title">📈 Dashboard รวม</div>
-    <div class="help-desc">สรุปภาพรวมจากหน้างานหลักและหน้าเลิกใช้ปกติ แยกกราฟเป็นคนละชุดเพื่อเทียบจำนวน งานค้าง สถานะ ผู้ปฏิบัติงาน และแหล่งข้อมูลได้ในหน้าเดียว</div>
+    <div class="help-title">📈 แดชบอร์ดกราฟงานมิเตอร์</div>
+    <div class="help-desc">หน้ากราฟแยกจากสรุปรายวัน/รายเดือน ใช้ดูภาพรวมงาน สถานะ รูปภาพประกอบ ผู้ปฏิบัติงาน Zone และคุณภาพข้อมูลในมุมเดียว</div>
   </div>
-  <div class="mets" id="dmets"></div>
+  <div class="dash-kpis" id="dmets"></div>
   <div id="dcharts"></div>
 </div>
 
@@ -789,6 +851,17 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 <div class="mo" id="mo" onclick="closeMo(event)">
   <div class="mbox" id="mbox"></div>
 </div>
+<div class="image-viewer" id="imageViewer" onclick="closeImageViewer(event)">
+  <div class="image-viewer-box" onclick="event.stopPropagation()">
+    <div class="image-viewer-bar">
+      <div class="image-viewer-title" id="imageViewerTitle">รูปภาพงาน</div>
+      <div class="image-viewer-spacer"></div>
+      <a class="image-viewer-open" id="imageViewerOpen" href="#" target="_blank" rel="noopener">เปิดไฟล์</a>
+      <button class="image-viewer-close" onclick="closeImageViewer()" type="button">✕</button>
+    </div>
+    <img class="image-viewer-img" id="imageViewerImg" alt="รูปภาพงานขนาดใหญ่">
+  </div>
+</div>
 <div class="pdf-viewer" id="pdfViewer" onclick="closeGuidePdf(event)">
   <div class="pdf-box" onclick="event.stopPropagation()">
     <div class="pdf-bar">
@@ -805,17 +878,22 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 // cols: 0=seq,1=date,2=worker,3=type,4=newPea,5=size,6=model,7=oldPea,8=zone,9=lat,10=lng,11=status,12=remark,13=name,14=addr,15=phone,16=mru
 var RAW = [];
 var AMI_ROWS = [];
+var JOB_IMAGES = [];
 const DEFAULT_APPS_URL = 'https://script.google.com/macros/s/AKfycbzAeSwH7slRk9kZi63lk4KRWOq4qmwqQoVcfdR4ZYAoObVGreEjl_EENmBxlVDcGGqI/exec';
 var APPS_URL = localStorage.getItem('pea_api_url') || DEFAULT_APPS_URL;
 const AMI_SHEET_ID = '1JSylUaOrnG2kOPA49aRgZM0Ub2rW5mmp90G1rSqJPB4';
 const AMI_SHEET_NAME = 'AMI';
 const ROTARY_SHEET_NAME = 'จานหมุน';
+const JOB_IMAGES_SHEET_ID = localStorage.getItem('pea_job_images_sheet_id') || '1AWbXKU56f7Bc_WFJAZBwK-UvGDWphDpfyTG-FaCq4sA';
+const JOB_IMAGES_SHEET_NAME = localStorage.getItem('pea_job_images_sheet_name') || 'images';
 // 0=seq,1=date,2=worker,3=type,4=newPea,5=size,6=model,7=oldPea,8=zone,9=lat,10=lng,11=status,12=remark,13=name,14=addr,15=phone,16=mru
 
 const MONTH = {'ม.ค.':1,'ก.พ.':2,'มี.ค.':3,'เม.ย.':4,'พ.ค.':5,'มิ.ย.':6,'ก.ค.':7,'ส.ค.':8,'ก.ย.':9,'ต.ค.':10,'พ.ย.':11,'ธ.ค.':12};
 const MONTH_LABELS = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 
 function g(r,i){return(r&&r[i]!=null)?String(r[i]).trim():'';}
+function escHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function escJs(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
 function zoneVal(r){const z=g(r,8);return z==='1'||z==='2'?z:'ไม่ระบุ';}
 function cleanZones(rows){
   (rows||[]).forEach(function(r){
@@ -860,6 +938,96 @@ function gvizSheetRows(sheetId, sheetName, range){
     sc.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(sheetName)+'&range='+encodeURIComponent(range)+'&_='+Date.now();
     document.head.appendChild(sc);
   });
+}
+function driveFileId(url){
+  url=String(url||'').trim();
+  var m=url.match(/\/file\/d\/([^/]+)/)||url.match(/[?&]id=([^&]+)/)||url.match(/\/uc\?export=view&id=([^&]+)/);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+function imageDisplayUrl(url){
+  url=String(url||'').trim();
+  var id=driveFileId(url);
+  return id ? 'https://drive.google.com/thumbnail?id='+encodeURIComponent(id)+'&sz=w1200' : url;
+}
+function imageOpenUrl(url){
+  url=String(url||'').trim();
+  var id=driveFileId(url);
+  return id ? 'https://drive.google.com/file/d/'+encodeURIComponent(id)+'/view' : url;
+}
+function normalizeDriveImageUrl(url){
+  return String(url||'').trim();
+}
+function extractImageUrlsFromRow(row){
+  var urls=[];
+  (row||[]).forEach(function(cell){
+    String(cell||'').split(/\s+/).forEach(function(part){
+      var cleaned=part.replace(/[),\]]+$/,'');
+      if(/^https?:\/\//i.test(cleaned)&&/\.(png|jpe?g|webp|gif)(\?|$)|drive\.google\.com/i.test(cleaned)){
+        urls.push(normalizeDriveImageUrl(cleaned));
+      }
+    });
+  });
+  return [...new Set(urls)];
+}
+function jobMatchKeys(r){
+  return [g(r,4)]
+    .filter(Boolean)
+    .map(function(v){return searchKey(v);})
+    .filter(function(v){return v&&v!=='0'&&v!=='ไม่ระบุ';});
+}
+function imageRowsForJob(r){
+  var keys=jobMatchKeys(r);
+  var found=[];
+  extractImageUrlsFromRow(r).forEach(function(url,i){
+    found.push({url:url,caption:'รูปจากแถวงาน '+(i+1),source:'row'});
+  });
+  (JOB_IMAGES||[]).forEach(function(row){
+    var rowText=searchKey((row||[]).join(' '));
+    if(!keys.some(function(key){return rowText.includes(key);}))return;
+    extractImageUrlsFromRow(row).forEach(function(url,i){
+      var caption=(row||[]).find(function(v){return String(v||'').trim()&&!/^https?:\/\//i.test(String(v));})||'รูปภาพงาน';
+      found.push({url:url,caption:caption,source:'sheet-'+i});
+    });
+  });
+  var seen={};
+  return found.filter(function(item){
+    if(!item.url||seen[item.url])return false;
+    seen[item.url]=true;
+    return true;
+  });
+}
+function buildJobImagesPanel(r){
+  var images=imageRowsForJob(r);
+  if(!images.length){
+    return '<aside class="job-images"><div class="job-images-head"><div class="job-images-title">รูปภาพงาน</div><span class="job-images-count">0</span></div><div class="job-image-empty">ยังไม่มีรูปที่ match กับ PEA / เลขคำร้อง / MRU ของงานนี้</div></aside>';
+  }
+  return '<aside class="job-images"><div class="job-images-head"><div class="job-images-title">รูปภาพงาน</div><span class="job-images-count">'+images.length+'</span></div><div class="job-image-list">'+
+    images.map(function(item,idx){
+      var src=imageDisplayUrl(item.url);
+      var href=imageOpenUrl(item.url);
+      var caption=item.caption||('รูปภาพงาน '+(idx+1));
+      return '<button class="job-image-card" type="button" onclick="openImageViewer(\''+escJs(src)+'\',\''+escJs(href)+'\',\''+escJs(caption)+'\')" title="'+escHtml(caption)+'">'+
+        '<img src="'+escHtml(src)+'" alt="'+escHtml(item.caption||('รูปภาพงาน '+(idx+1)))+'" loading="lazy">'+
+        '<span class="job-image-caption">'+escHtml(caption)+'</span>'+
+      '</button>';
+    }).join('')+'</div></aside>';
+}
+function decorateJobModalWithImages(r){
+  var box=document.getElementById('mbox');
+  if(!box)return;
+  var current=box.innerHTML;
+  box.classList.add('with-images');
+  box.innerHTML='<div class="modal-layout"><div class="modal-main">'+current+'</div>'+buildJobImagesPanel(r)+'</div>';
+}
+async function loadJobImages(){
+  if(!JOB_IMAGES_SHEET_ID||!JOB_IMAGES_SHEET_NAME)return [];
+  try{
+    JOB_IMAGES=await gvizSheetRows(JOB_IMAGES_SHEET_ID, JOB_IMAGES_SHEET_NAME, 'A:Z');
+  }catch(e){
+    console.warn('Job image sync skipped:', e.message);
+    JOB_IMAGES=[];
+  }
+  return JOB_IMAGES;
 }
 function amiStatus(r){
   var text=[r[13],r[14],r[15],r[16],r[18],r[19]].join(' ');
@@ -1422,6 +1590,7 @@ function openAmiMo(i){
     '</div></div>'+
     (reason?'<div class="msec"><div class="msect">เหตุผล / หมายเหตุ</div><div class="mf full"><div class="mfv">'+reason+'</div></div></div>':'')+
     '<button class="copy-btn" onclick="copyJobText()">📋 คัดลอกข้อมูลงาน</button>';
+  decorateJobModalWithImages(r);
   document.getElementById('mo').classList.add('on');
 }
 
@@ -1470,6 +1639,25 @@ function copyJobText(){
 }
 function fallbackCopy(txt,done){
   const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();done();
+}
+function openImageViewer(src, href, title){
+  var viewer=document.getElementById('imageViewer');
+  var img=document.getElementById('imageViewerImg');
+  var open=document.getElementById('imageViewerOpen');
+  var ttl=document.getElementById('imageViewerTitle');
+  if(!viewer||!img)return;
+  img.src=src||'';
+  img.alt=title||'รูปภาพงานขนาดใหญ่';
+  if(open)open.href=href||src||'#';
+  if(ttl)ttl.textContent=title||'รูปภาพงาน';
+  viewer.classList.add('on');
+}
+function closeImageViewer(e){
+  if(e&&e.target&&e.target.id!=='imageViewer')return;
+  var viewer=document.getElementById('imageViewer');
+  var img=document.getElementById('imageViewerImg');
+  if(viewer)viewer.classList.remove('on');
+  if(img)img.removeAttribute('src');
 }
 // ── MODAL ──
 function openMo(idx){
@@ -1520,10 +1708,11 @@ function openMo(idx){
   document.getElementById('mbox').innerHTML += '<button class="print-btn" onclick="doPrint()">🖨️ พิมพ์ใบงานนี้</button>';
   var inQueue = printSelectedRows.some(function(x){ return x[0]===r[0]; });
   document.getElementById('mbox').innerHTML += '<button class="select-print-btn' + (inQueue?' selected':'') + '" id="queueToggleBtn" onclick="toggleQueue()">☑️ ' + (inQueue?'ถูกเลือกแล้ว ('+printSelectedRows.length+'/4)':'เลือกพิมพ์พร้อมกัน') + '</button>';
+  decorateJobModalWithImages(r);
   document.getElementById('mo').classList.add('on');
 }
-function closeMo(e){if(!e||e.target.id==='mo')document.getElementById('mo').classList.remove('on');}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMo();closeGuidePdf();}});
+function closeMo(e){if(!e||e.target.id==='mo'){document.getElementById('mo').classList.remove('on');document.getElementById('mbox').classList.remove('with-images');}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeImageViewer();closeMo();closeGuidePdf();}});
 
 // ── PENDING ──
 function getPendingRows(){
@@ -1712,14 +1901,19 @@ function buildDash(){
   const total = allRows.length;
   const closed = mainClosed + discClosed;
   const waiting = total - closed;
+  const withImages = mainRows.filter(r=>imageRowsForJob(r).length>0).length;
+  const noImages = Math.max(0, mainRows.length - withImages);
+  const withGps = mainRows.filter(rowHasCoord).length;
+  const noGps = Math.max(0, mainRows.length - withGps);
   const el = document.getElementById('dmets');
   if(el){
     el.innerHTML = `
-      <div class="met"><div class="ml">งานหลัก</div><div class="mv">${mainRows.length.toLocaleString()}</div><div class="ms">รายการ</div></div>
-      <div class="met g"><div class="ml">เลิกใช้ปกติ</div><div class="mv">${discRows.length.toLocaleString()}</div><div class="ms">รายการ</div></div>
-      <div class="met t"><div class="ml">รวมทั้งหมด</div><div class="mv">${total.toLocaleString()}</div><div class="ms">รายการ</div></div>
-      <div class="met a"><div class="ml">รอรวม</div><div class="mv">${waiting.toLocaleString()}</div><div class="ms">ยังไม่ปิด</div></div>
-      <div class="met g"><div class="ml">ปิดรวม</div><div class="mv">${closed.toLocaleString()}</div><div class="ms">${total?Math.round(closed/total*100):0}%</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-label">งานหลักทั้งหมด</div><div class="dash-kpi-value">${mainRows.length.toLocaleString()}</div><div class="dash-kpi-note">งานจ่ายมิเตอร์</div></div>
+      <div class="dash-kpi g"><div class="dash-kpi-label">ปิดงานรวม</div><div class="dash-kpi-value">${closed.toLocaleString()}</div><div class="dash-kpi-note">${total?Math.round(closed/total*100):0}% จากงานทั้งหมด</div></div>
+      <div class="dash-kpi a"><div class="dash-kpi-label">รอดำเนินการ</div><div class="dash-kpi-value">${waiting.toLocaleString()}</div><div class="dash-kpi-note">ยังไม่ปิดงาน</div></div>
+      <div class="dash-kpi t"><div class="dash-kpi-label">งานที่มีรูป</div><div class="dash-kpi-value">${withImages.toLocaleString()}</div><div class="dash-kpi-note">${mainRows.length?Math.round(withImages/mainRows.length*100):0}% ของงานหลัก</div></div>
+      <div class="dash-kpi r"><div class="dash-kpi-label">งานยังไม่มีรูป</div><div class="dash-kpi-value">${noImages.toLocaleString()}</div><div class="dash-kpi-note">ตรวจจาก PEA ในชีตรูป</div></div>
+      <div class="dash-kpi p"><div class="dash-kpi-label">เลิกใช้ปกติ</div><div class="dash-kpi-value">${discRows.length.toLocaleString()}</div><div class="dash-kpi-note">AMI / จานหมุน</div></div>
     `;
   }
 
@@ -1752,14 +1946,48 @@ function buildDash(){
     rows.forEach(r=>bump(obj, fn(r)));
     return obj;
   }
-  function bars(title,obj,limit,color){
+  function topEntries(obj,limit){
+    return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||8);
+  }
+  function bars(title,obj,limit,color,sub){
     const items = Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||8);
-    if(!items.length)return `<div class="mini-chart"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></div>`;
+    if(!items.length)return `<section class="dash-panel"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></section>`;
     const max = items[0][1] || 1;
-    return `<div class="mini-chart"><h3>${dashEsc(title)}</h3>` + items.map(([k,v])=>{
+    return `<section class="dash-panel"><h3>${dashEsc(title)}</h3>${sub?`<div class="dash-panel-sub">${dashEsc(sub)}</div>`:''}` + items.map(([k,v])=>{
       const pct = Math.max(4, Math.round(v / max * 100));
-      return `<div class="chart-row"><div class="chart-label" title="${dashEsc(k)}">${dashEsc(k)}</div><div class="chart-track"><div class="chart-fill" style="width:${pct}%;${color?'background:'+color:''}"></div></div><div class="chart-value">${v.toLocaleString()}</div></div>`;
-    }).join('') + `</div>`;
+      return `<div class="dash-bar-row"><div class="dash-bar-label" title="${dashEsc(k)}">${dashEsc(k)}</div><div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;${color?'background:'+color:''}"></div></div><div class="dash-bar-value">${v.toLocaleString()}</div></div>`;
+    }).join('') + `</section>`;
+  }
+  function donut(title,obj,colors){
+    const items=topEntries(obj,6);
+    const sum=items.reduce((n,it)=>n+it[1],0);
+    if(!items.length||!sum)return `<section class="dash-panel"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></section>`;
+    colors=colors||['#4a9eff','#2dd4bf','#fbbf24','#a78bfa','#f87171','#4ade80'];
+    let acc=0;
+    const stops=items.map(([k,v],i)=>{
+      const start=acc/sum*100; acc+=v; const end=acc/sum*100;
+      return `${colors[i%colors.length]} ${start}% ${end}%`;
+    }).join(',');
+    return `<section class="dash-panel"><h3>${dashEsc(title)}</h3><div class="donut-wrap"><div class="donut" style="background:conic-gradient(${stops})"></div><div class="donut-legend">`+
+      items.map(([k,v],i)=>`<div class="donut-item"><span class="donut-dot" style="background:${colors[i%colors.length]}"></span><span>${dashEsc(k)} · ${v.toLocaleString()}</span></div>`).join('')+
+      `</div></div></section>`;
+  }
+  function spark(title,obj,limit){
+    const items=Object.entries(obj).sort(function(a,b){
+      const pa=parseDate('1 '+a[0]), pb=parseDate('1 '+b[0]);
+      return (pa.y*100+pa.m)-(pb.y*100+pb.m);
+    }).slice(-(limit||10));
+    if(!items.length)return `<section class="dash-panel wide"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></section>`;
+    const max=Math.max(...items.map(it=>it[1]),1);
+    return `<section class="dash-panel wide"><h3>${dashEsc(title)}</h3><div class="sparkline">`+
+      items.map(([k,v])=>`<div class="spark-bar" title="${dashEsc(k)}: ${v}" style="height:${Math.max(6,Math.round(v/max*100))}%"><span>${v}</span></div>`).join('')+
+      `</div><div class="dash-panel-sub">${items.map(it=>dashEsc(it[0])).join(' · ')}</div></section>`;
+  }
+  function tablePanel(title,items){
+    if(!items.length)return `<section class="dash-panel"><h3>${dashEsc(title)}</h3><div class="empty">ไม่มีข้อมูล</div></section>`;
+    return `<section class="dash-panel"><h3>${dashEsc(title)}</h3><table class="dash-table"><tbody>`+
+      items.map(([k,v])=>`<tr><td>${dashEsc(k)}</td><td>${v.toLocaleString()}</td></tr>`).join('')+
+      `</tbody></table></section>`;
   }
 
   const mainType = collect(mainRows, r=>normalizeType(g(r,3)));
@@ -1767,6 +1995,13 @@ function buildDash(){
   const mainStatus = collect(mainRows, r=>normalizeStatus(g(r,11)));
   const mainZone = collect(mainRows, r=>zoneVal(r));
   const mainMonth = collect(mainRows, monthBucket);
+  const imageStatus = {'มีรูปแล้ว': withImages, 'ยังไม่มีรูป': noImages};
+  const gpsStatus = {'มีพิกัด': withGps, 'ไม่มีพิกัด': noGps};
+  const noImageByWorker = {};
+  mainRows.forEach(r=>{
+    if(imageRowsForJob(r).length>0)return;
+    bump(noImageByWorker,g(r,2));
+  });
 
   const discSource = collect(discRows, r=>g(r,8));
   const discStatus = collect(discRows, r=>normalizeStatus(g(r,11)));
@@ -1777,21 +2012,19 @@ function buildDash(){
   const chartEl = document.getElementById('dcharts');
   if(chartEl){
     chartEl.innerHTML = `
-      <div class="summary-section-title">งานจ่ายมิเตอร์</div>
-      <div class="chart-grid">
-        ${bars('สถานะงาน', mainStatus, 8, '#4a9eff')}
-        ${bars('ประเภทงาน', mainType, 8)}
-        ${bars('ผู้ปฏิบัติงาน', mainWorker, 10)}
-        ${bars('Zone', mainZone, 6)}
-        ${bars('เดือนที่ได้รับใบงาน', mainMonth, 8)}
-      </div>
-      <div class="summary-section-title">เลิกใช้ปกติ</div>
-      <div class="chart-grid">
-        ${bars('สถานะละเอียด', discStatus, 8, '#2dd4bf')}
-        ${bars('แหล่งข้อมูล', discSource, 4)}
-        ${bars('ผู้ปฏิบัติงาน', discWorker, 10)}
-        ${bars('ขนาดมิเตอร์', discSize, 8)}
-        ${bars('เดือนที่ได้รับใบงาน', discMonth, 8)}
+      <div class="dash-board-grid">
+        ${donut('สถานะงานหลัก', mainStatus, ['#4ade80','#fbbf24','#f87171','#4a9eff'])}
+        ${donut('รูปภาพประกอบงาน', imageStatus, ['#2dd4bf','#f87171'])}
+        ${bars('ประเภทงานสูงสุด', mainType, 7, 'linear-gradient(90deg,#4a9eff,#2dd4bf)')}
+        ${bars('งานตาม Zone', mainZone, 5, 'linear-gradient(90deg,#a78bfa,#4a9eff)')}
+        ${bars('ผู้ปฏิบัติงานสูงสุด', mainWorker, 10, 'linear-gradient(90deg,#2dd4bf,#4ade80)', 'งานหลัก')}
+        ${bars('งานยังไม่มีรูปตามผู้ปฏิบัติ', noImageByWorker, 10, 'linear-gradient(90deg,#f87171,#fbbf24)')}
+        ${spark('แนวโน้มงานหลักรายเดือน', mainMonth, 10)}
+        ${donut('คุณภาพข้อมูลพิกัด', gpsStatus, ['#4ade80','#fbbf24'])}
+        ${bars('เลิกใช้ปกติ · สถานะ', discStatus, 7, 'linear-gradient(90deg,#4a9eff,#a78bfa)')}
+        ${bars('เลิกใช้ปกติ · แหล่งข้อมูล', discSource, 4, 'linear-gradient(90deg,#2dd4bf,#4a9eff)')}
+        ${bars('เลิกใช้ปกติ · ผู้ปฏิบัติงาน', discWorker, 8, 'linear-gradient(90deg,#a78bfa,#f87171)')}
+        ${tablePanel('Top ขนาดมิเตอร์', topEntries(discSize,8))}
       </div>
     `;
   }
@@ -1803,6 +2036,7 @@ function showPg(name,btn){
   document.getElementById('pg-'+name).classList.add('on');
   btn.classList.add('on');
   if(name==='guide')renderGuidePdfs();
+  if(name==='dash')buildDash();
 }
 
 // INIT
@@ -1843,6 +2077,7 @@ async function syncData() {
         if (!j.ok || !j.rows || !j.rows.length) throw new Error(j.error || 'ไม่มีข้อมูล');
         AMI_ROWS = prepareRows(await loadAmiRows());
         RAW = prepareRows(j.rows||[]);
+        await loadJobImages();
         APPS_URL = sourceUrl;
         if (sourceUrl === DEFAULT_APPS_URL && configuredUrl && configuredUrl !== DEFAULT_APPS_URL) {
           localStorage.removeItem('pea_api_url');
@@ -1859,6 +2094,7 @@ async function syncData() {
   } catch(err) {
     RAW = [];
     AMI_ROWS = [];
+    await loadJobImages();
     setSync('amber', 'โหลดข้อมูลสดไม่ได้ · ไม่มีข้อมูลเก่าฝังไว้ (' + err.message + ')');
     await attachRequestNumbers(RAW);
     initAll();
@@ -2499,6 +2735,7 @@ function saveUrl() {
       if (!j.ok) throw new Error(j.error || 'ข้อมูลผิดพลาด');
       RAW = prepareRows(j.rows);
       AMI_ROWS = prepareRows(await loadAmiRows());
+      await loadJobImages();
       msg.style.color='var(--green)';
       msg.textContent = '✓ เชื่อมต่อสำเร็จ! งานหลัก ' + RAW.length.toLocaleString() + ' รายการ · เลิกใช้ ' + AMI_ROWS.length.toLocaleString() + ' · อัปเดต ' + j.updated;
       setSync('green', 'สด · ' + j.updated + ' · งานหลัก ' + RAW.length.toLocaleString() + ' · เลิกใช้ ' + AMI_ROWS.length.toLocaleString());
