@@ -918,8 +918,9 @@ function phoneVal(r){
 function mruVal(r){
   var raw=g(r,16);
   if(!raw)return '';
-  var prefix=(raw.match(/^[A-Za-z]+/)||['HPTY'])[0].toUpperCase();
-  var nums=raw.slice(prefix.length).match(/\d+/g)||raw.match(/\d+/g)||[];
+  var m=raw.match(/^[A-Za-z]+/);
+  var prefix=(m ? m[0] : 'HPTY').toUpperCase();
+  var nums=(m ? raw.slice(m[0].length) : raw).match(/\d+/g)||[];
   if(!nums.length)return prefix+raw.replace(/^[A-Za-z]+/,'');
   var first=String(nums[0]).padStart(4,'0');
   if(nums.length<2)return prefix+first;
