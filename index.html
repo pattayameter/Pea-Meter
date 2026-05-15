@@ -131,9 +131,9 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .mf{background:var(--bg3);border-radius:var(--rs);padding:9px 11px}
 .mfl{font-size:10px;color:var(--t3);margin-bottom:2px}
-.mfv{font-size:12px;color:var(--t)}
-.mfv.mono{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal)}
-.mfv.mru{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--amber);font-weight:500}
+.mfv{font-size:12px;color:var(--t);font-weight:500;line-height:1.35}
+.mfv.mono{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);font-weight:500}
+.mfv.mru{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--amber);font-weight:500}
 .meter-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:7px}
 .meter-row-label{display:none}
 .full{grid-column:1/-1}
@@ -1728,7 +1728,7 @@ function openMo(idx){
       <span class="badge bgr">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Zone '+zoneVal(r)}</span>
       ${g(r,3)?`<span class="badge bgr">${g(r,3)}</span>`:''}
     </div>
-    ${(requestNo||mru)?`<div class="msec"><div class="msect">คำร้อง / MRU</div><div class="mgrid"><div class="mf"><div class="mfl">เลขที่คำร้อง</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${requestNo||'—'}</div></div><div class="mf"><div class="mfl">รหัส MRU</div><div class="mfv mru">${mru||'—'}</div></div></div></div>`:''}
+    ${(requestNo||mru)?`<div class="msec"><div class="msect">คำร้อง / MRU</div><div class="mgrid"><div class="mf"><div class="mfl">เลขที่คำร้อง</div><div class="mfv mono" style="color:var(--teal)">${requestNo||'—'}</div></div><div class="mf"><div class="mfl">รหัส MRU</div><div class="mfv mru">${mru||'—'}</div></div></div></div>`:''}
     <div class="msec"><div class="msect">ข้อมูลงาน</div>
       <div class="mgrid">
         <div class="mf"><div class="mfl">วันที่จ่ายงาน</div><div class="mfv">${fmtDate(g(r,1))}</div></div>
@@ -1740,7 +1740,7 @@ function openMo(idx){
     </div>
     <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
       <div class="meter-grid">
-        <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${newPeaVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="color:var(--teal)">${newPeaVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">ขนาดใหม่</div><div class="mfv">${newSizeVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">รุ่นใหม่</div><div class="mfv">${newModelVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">หน่วยใหม่</div><div class="mfv mono">${newUnitVal(r)||'—'}</div></div>
@@ -2897,6 +2897,7 @@ function askPassword(btn) {
 </script>
 </body>
 </html>
+
 
 
 
