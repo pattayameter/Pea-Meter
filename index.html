@@ -921,10 +921,10 @@ function newPeaVal(r){return sheetExtraVal(r,'newPea',4);}
 function newSizeVal(r){return sheetExtraVal(r,'newSize',5);}
 function newUnitVal(r){return sheetExtraVal(r,'newUnit',-1);}
 function newModelVal(r){return sheetExtraVal(r,'newModel',6);}
-function oldPeaVal(r){return sheetExtraVal(r,'oldPea',7);}
-function oldSizeVal(r){return sheetExtraVal(r,'oldSize',5);}
+function oldPeaVal(r){return sheetExtraVal(r,'oldPea',-1);}
+function oldSizeVal(r){return sheetExtraVal(r,'oldSize',-1);}
 function oldUnitVal(r){return sheetExtraVal(r,'oldUnit',-1);}
-function oldModelVal(r){return sheetExtraVal(r,'oldModel',6);}
+function oldModelVal(r){return sheetExtraVal(r,'oldModel',-1);}
 function phoneVal(r){
   var raw=g(r,15);
   var digits=raw.replace(/\D/g,'');
