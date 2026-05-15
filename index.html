@@ -895,6 +895,26 @@ function g(r,i){return(r&&r[i]!=null)?String(r[i]).trim():'';}
 function escHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function escJs(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
 function zoneVal(r){const z=g(r,8);return z==='1'||z==='2'?z:'ไม่ระบุ';}
+function looksLikeLine(v){v=String(v||'').trim();return !!v && !/^\d{6,}$/.test(v) && (/สาย|line/i.test(v) || v.length<=20);}
+function captureLineColumn(rows){
+  (rows||[]).forEach(function(r){
+    if(!r || r._line) return;
+    var line=g(r,17);
+    if(looksLikeLine(line)) r._line=line;
+    var locate=g(r,41);
+    if(locate) r._locate=locate;
+  });
+  return rows||[];
+}
+function lineVal(r){return r && r._line ? String(r._line).trim() : '';}
+function locateVal(r){return r && r._locate ? String(r._locate).trim() : g(r,41);}
+function rv(r,i){return i==='line'?lineVal(r):g(r,i);}
+function phoneVal(r){
+  var raw=g(r,15);
+  var digits=raw.replace(/\D/g,'');
+  if(digits.length===9 && digits.charAt(0)!=='0') return '0'+digits;
+  return raw;
+}
 function cleanZones(rows){
   (rows||[]).forEach(function(r){
     if(r)r[8]=zoneVal(r);
@@ -915,7 +935,7 @@ function dedupeRows(rows){
   return order.map(function(k){return byKey[k];});
 }
 function prepareRows(rows){
-  return cleanZones(dedupeRows(rows));
+  return cleanZones(captureLineColumn(dedupeRows(rows)));
 }
 function cellText(c){
   return c ? String(c.f != null ? c.f : (c.v != null ? c.v : '')).trim() : '';
@@ -1399,7 +1419,7 @@ function doSearch(){
   const fz=document.getElementById('fz').value;
   const ff=document.getElementById('ff')?.value || '';
   filtered=RAW.filter(r=>{
-    if(q){const h=r.map(v=>String(v||'')).join(' ').toLowerCase(), hk=searchKey(h);if(!h.includes(q)&&!hk.includes(qk)&&!hk.includes(qAlt))return false;}
+    if(q){const h=(r.map(v=>String(v||'')).join(' ')+' '+lineVal(r)+' '+locateVal(r)).toLowerCase(), hk=searchKey(h);if(!h.includes(q)&&!hk.includes(qk)&&!hk.includes(qAlt))return false;}
     if(ft&&!g(r,3).includes(ft))return false;
     if(fst&&!g(r,11).includes(fst))return false;
     if(fz&&zoneVal(r)!==fz)return false;
@@ -1416,7 +1436,7 @@ function doSearch(){
   renderTable();
 }
 
-const HEADS=[['#',0],['วันที่',1],['ผู้ปฏิบัติ',2],['ประเภทงาน',3],['มิเตอร์ใหม่ (PEA)',4],['ขนาด',5],['Zone',8],['ชื่อ / ที่อยู่',13],['สถานะ',11]];
+const HEADS=[['#',0],['วันที่',1],['ผู้ปฏิบัติ',2],['ประเภทงาน',3],['มิเตอร์ใหม่ (PEA)',4],['ขนาด',5],['สาย','line'],['Locate','locate'],['Zone',8],['ชื่อ / ที่อยู่',13],['สถานะ',11]];
 
 function renderTable(){
   if(!filtered.length){document.getElementById('tw').innerHTML='<div class="empty">ไม่พบรายการที่ตรงกับเงื่อนไข</div>';return;}
@@ -1424,7 +1444,7 @@ function renderTable(){
   let h=`<table><thead><tr><th class="print-col">พิมพ์</th>`;
   HEADS.forEach(([lbl,ci])=>{
     const s=sortC===ci;
-    h+=`<th class="${s?'on':''}" onclick="setSort(${ci})">${lbl}<span class="si2">${s?(sortAsc?'↑':'↓'):'↕'}</span></th>`;
+    h+=`<th class="${s?'on':''}" onclick="${typeof ci==='number'?'setSort('+ci+')':''}">${lbl}${typeof ci==='number'?`<span class="si2">${s?(sortAsc?'↑':'↓'):'↕'}</span>`:''}</th>`;
   });
   h+=`</tr></thead><tbody>`;
   pageRows.forEach((r,i)=>{
@@ -1438,6 +1458,8 @@ function renderTable(){
       <td>${g(r,3)||'—'}</td>
       <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
       <td style="color:var(--t2)">${g(r,5)||'—'}</td>
+      <td style="color:var(--t2)">${lineVal(r)||'—'}</td>
+      <td style="color:var(--t2)">${locateVal(r)||'—'}</td>
       <td style="text-align:center;color:var(--t2)">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Z'+zoneVal(r)}</td>
       <td>
         <div class="cell-name">${name}</div>
@@ -1620,8 +1642,10 @@ function buildJobText(r){
     'มิเตอร์ใหม่: '+(g(r,4)||'-'),
     'MRU: '+(g(r,16)||'-'),
     'ขนาด: '+(g(r,5)||'-'),
+    'สาย: '+(lineVal(r)||'-'),
+    'Locate: '+(locateVal(r)||'-'),
     'ที่อยู่: '+(g(r,14)||'-'),
-    'โทร: '+(g(r,15)||'-'),
+    'โทร: '+(phoneVal(r)||'-'),
     'GPS: '+gps,
     'สถานะ: '+(g(r,11)||'-')
   ];
@@ -1682,7 +1706,8 @@ function openMo(idx){
         <div class="mf"><div class="mfl">วันที่จ่ายงาน</div><div class="mfv">${fmtDate(g(r,1))}</div></div>
         <div class="mf"><div class="mfl">ผู้ปฏิบัติงาน</div><div class="mfv">${g(r,2)||'—'}</div></div>
         <div class="mf"><div class="mfl">ลำดับที่</div><div class="mfv mono">${g(r,0)||'—'}</div></div>
-        <div class="mf"><div class="mfl">ขนาดมิเตอร์</div><div class="mfv">${g(r,5)||'—'}</div></div>
+        <div class="mf"><div class="mfl">สาย</div><div class="mfv">${lineVal(r)||'—'}</div></div>
+        <div class="mf full"><div class="mfl">Locate</div><div class="mfv">${locateVal(r)||'—'}</div></div>
       </div>
     </div>
     <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
@@ -1696,7 +1721,7 @@ function openMo(idx){
     <div class="msec"><div class="msect">ที่อยู่และการติดต่อ</div>
       <div class="mgrid">
         <div class="mf full"><div class="mfl">ที่อยู่</div><div class="mfv">${g(r,14)||'—'}</div></div>
-        <div class="mf"><div class="mfl">เบอร์โทร</div><div class="mfv">${g(r,15)?`<a href="tel:${g(r,15)}" style="color:var(--blue);text-decoration:none">${g(r,15)}</a>`:'—'}</div></div>
+        <div class="mf"><div class="mfl">เบอร์โทร</div><div class="mfv">${phoneVal(r)?`<a href="tel:${phoneVal(r)}" style="color:var(--blue);text-decoration:none">${phoneVal(r)}</a>`:'—'}</div></div>
         <div class="mf"><div class="mfl">พิกัด GPS</div><div class="mfv mono" style="font-size:10px">${hasGps?lat+', '+lng:'—'}</div></div>
       </div>
     </div>
@@ -2507,6 +2532,8 @@ function doPrint() {
   c += '<div class="print-field"><div class="print-field-label">ผู้ปฏิบัติงาน</div><div class="print-field-val">'+(g(r,2)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">ประเภทงาน</div><div class="print-field-val">'+(g(r,3)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">ขนาดมิเตอร์</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">สาย</div><div class="print-field-val">'+(lineVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">Locate</div><div class="print-field-val">'+(locateVal(r)||'—')+'</div></div>';
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลมิเตอร์</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:15px">'+(g(r,4)||'—')+'</div></div>';
@@ -2516,7 +2543,7 @@ function doPrint() {
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่และการติดต่อ</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">ที่อยู่สถานที่ใช้ไฟ</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">เบอร์โทรศัพท์</div><div class="print-field-val">'+(g(r,15)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">เบอร์โทรศัพท์</div><div class="print-field-val">'+(phoneVal(r)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">พิกัด GPS</div><div class="print-field-val mono" style="font-size:11px">'+(hasGps ? lat+', '+lng : '—')+'</div></div>';
   c += '</div></div>';
   if (rmk) {
@@ -2637,6 +2664,8 @@ function buildSlip(r, corner) {
   c += '<div class="print-field"><div class="print-field-label">ผู้ปฏิบัติงาน</div><div class="print-field-val">'+(g(r,2)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">ประเภทงาน</div><div class="print-field-val">'+(g(r,3)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">ขนาด</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">สาย</div><div class="print-field-val">'+(lineVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">Locate</div><div class="print-field-val">'+(locateVal(r)||'—')+'</div></div>';
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">มิเตอร์</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:11px">'+(g(r,4)||'—')+'</div></div>';
@@ -2646,7 +2675,7 @@ function buildSlip(r, corner) {
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">ที่อยู่</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">โทร</div><div class="print-field-val">'+(g(r,15)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">โทร</div><div class="print-field-val">'+(phoneVal(r)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">GPS</div><div class="print-field-val mono" style="font-size:8px">'+(hasGps ? lat+', '+lng : '—')+'</div></div>';
   c += '</div></div>';
   if (rmk) {
