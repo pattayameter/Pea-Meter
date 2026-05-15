@@ -275,6 +275,8 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 .print-field-label { font-size: 7.5px; color: #9ca3af; margin-bottom: 1px; }
 .print-field-val { font-size: 10px; color: #111827; font-weight: 500; line-height: 1.3; }
 .print-field-val.mono { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #0f766e; }
+.print-meter-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 3px; }
+.print-meter-grid .print-field.full { grid-column: auto; }
 .print-footer {
   margin-top: 4px; padding-top: 3px;
   border-top: 1px solid #e5e7eb;
@@ -2620,11 +2622,15 @@ function doPrint() {
   c += '<div class="print-field"><div class="print-field-label">สาย</div><div class="print-field-val">'+(lineVal(r)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">Locate</div><div class="print-field-val">'+(locateVal(r)||'—')+'</div></div>';
   c += '</div></div>';
-  c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลมิเตอร์</div><div class="print-grid">';
-  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:15px">'+(g(r,4)||'—')+'</div></div>';
-  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์เก่า (PEA)</div><div class="print-field-val mono">'+(g(r,7)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">รุ่นมิเตอร์</div><div class="print-field-val">'+(g(r,6)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">ขนาด / Phase</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">ข้อมูลมิเตอร์</div><div class="print-meter-grid">';
+  c += '<div class="print-field"><div class="print-field-label">มิเตอร์ใหม่</div><div class="print-field-val mono" style="font-size:11px">'+(newPeaVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาดใหม่</div><div class="print-field-val">'+(newSizeVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่นใหม่</div><div class="print-field-val">'+(newModelVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">หน่วยใหม่</div><div class="print-field-val mono">'+(newUnitVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">มิเตอร์เก่า</div><div class="print-field-val mono">'+(oldPeaVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาดเก่า</div><div class="print-field-val">'+(oldSizeVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่นเก่า</div><div class="print-field-val">'+(oldModelVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">หน่วยเก่า</div><div class="print-field-val mono">'+(oldUnitVal(r)||'—')+'</div></div>';
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่และการติดต่อ</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">ที่อยู่สถานที่ใช้ไฟ</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
@@ -2752,11 +2758,15 @@ function buildSlip(r, corner) {
   c += '<div class="print-field"><div class="print-field-label">สาย</div><div class="print-field-val">'+(lineVal(r)||'—')+'</div></div>';
   c += '<div class="print-field"><div class="print-field-label">Locate</div><div class="print-field-val">'+(locateVal(r)||'—')+'</div></div>';
   c += '</div></div>';
-  c += '<div class="print-sec"><div class="print-sec-title">มิเตอร์</div><div class="print-grid">';
-  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์ใหม่ (PEA)</div><div class="print-field-val mono" style="font-size:11px">'+(g(r,4)||'—')+'</div></div>';
-  c += '<div class="print-field full"><div class="print-field-label">มิเตอร์เก่า (PEA)</div><div class="print-field-val mono">'+(g(r,7)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">รุ่น</div><div class="print-field-val">'+(g(r,6)||'—')+'</div></div>';
-  c += '<div class="print-field"><div class="print-field-label">Phase</div><div class="print-field-val">'+(g(r,5)||'—')+'</div></div>';
+  c += '<div class="print-sec"><div class="print-sec-title">มิเตอร์</div><div class="print-meter-grid">';
+  c += '<div class="print-field"><div class="print-field-label">มิเตอร์ใหม่</div><div class="print-field-val mono" style="font-size:9px">'+(newPeaVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาดใหม่</div><div class="print-field-val">'+(newSizeVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่นใหม่</div><div class="print-field-val">'+(newModelVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">หน่วยใหม่</div><div class="print-field-val mono">'+(newUnitVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">มิเตอร์เก่า</div><div class="print-field-val mono">'+(oldPeaVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">ขนาดเก่า</div><div class="print-field-val">'+(oldSizeVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">รุ่นเก่า</div><div class="print-field-val">'+(oldModelVal(r)||'—')+'</div></div>';
+  c += '<div class="print-field"><div class="print-field-label">หน่วยเก่า</div><div class="print-field-val mono">'+(oldUnitVal(r)||'—')+'</div></div>';
   c += '</div></div>';
   c += '<div class="print-sec"><div class="print-sec-title">ที่อยู่</div><div class="print-grid">';
   c += '<div class="print-field full"><div class="print-field-label">ที่อยู่</div><div class="print-field-val">'+(g(r,14)||'—')+'</div></div>';
