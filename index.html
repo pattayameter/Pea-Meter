@@ -906,7 +906,11 @@ function captureLineColumn(rows){
   });
   return rows||[];
 }
-function lineVal(r){return r && r._line ? String(r._line).trim() : '';}
+function lineVal(r){
+  if(r && r._line) return String(r._line).trim();
+  var line=g(r,17);
+  return looksLikeLine(line) ? line : '';
+}
 function locateVal(r){return r && r._locate ? String(r._locate).trim() : g(r,41);}
 function rv(r,i){return i==='line'?lineVal(r):g(r,i);}
 function phoneVal(r){
@@ -2102,6 +2106,7 @@ async function syncData() {
         if (!j.ok || !j.rows || !j.rows.length) throw new Error(j.error || 'ไม่มีข้อมูล');
         AMI_ROWS = prepareRows(await loadAmiRows());
         RAW = prepareRows(j.rows||[]);
+        await attachWorkExtraFields(RAW);
         await loadJobImages();
         APPS_URL = sourceUrl;
         if (sourceUrl === DEFAULT_APPS_URL && configuredUrl && configuredUrl !== DEFAULT_APPS_URL) {
@@ -2153,6 +2158,48 @@ function loadRequestMap(){
     sc.src=REQUEST_SHEET_URL+'?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(REQUEST_SHEET_NAME)+'&_='+Date.now();
     document.head.appendChild(sc);
   });
+}
+
+function loadWorkExtraMap(){
+  return new Promise((resolve,reject)=>{
+    const cb='peaExtraCb_'+Date.now()+'_'+Math.floor(Math.random()*10000);
+    const sc=document.createElement('script');
+    const done=()=>{delete window[cb];sc.remove();};
+    window[cb]=res=>{
+      try{
+        if(!res||res.status!=='ok'||!res.table)throw new Error('โหลดชีต Locate ไม่ได้');
+        const map={};
+        (res.table.rows||[]).forEach(row=>{
+          const c=row.c||[];
+          const seq=sheetCell(c[0]);
+          if(!seq)return;
+          const line=sheetCell(c[17]);
+          const locate=sheetCell(c[41]);
+          map[seq]={line,locate};
+        });
+        done();resolve(map);
+      }catch(e){done();reject(e);}
+    };
+    sc.onerror=()=>{done();reject(new Error('โหลดชีต Locate ไม่ได้'));};
+    sc.src=REQUEST_SHEET_URL+'?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(REQUEST_SHEET_NAME)+'&range=A:AP&_='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+
+async function attachWorkExtraFields(rows){
+  try{
+    const extraMap=await loadWorkExtraMap();
+    rows.forEach(r=>{
+      const extra=extraMap[g(r,0)];
+      if(!extra)return;
+      if(extra.line)r._line=extra.line;
+      if(extra.locate)r._locate=extra.locate;
+    });
+    return Object.keys(extraMap).length;
+  }catch(e){
+    console.warn('Line/Locate sync skipped:', e.message);
+    return 0;
+  }
 }
 
 async function attachRequestNumbers(rows){
@@ -2764,6 +2811,7 @@ function saveUrl() {
       if (!j.ok) throw new Error(j.error || 'ข้อมูลผิดพลาด');
       RAW = prepareRows(j.rows);
       AMI_ROWS = prepareRows(await loadAmiRows());
+      await attachWorkExtraFields(RAW);
       await loadJobImages();
       msg.style.color='var(--green)';
       msg.textContent = '✓ เชื่อมต่อสำเร็จ! งานหลัก ' + RAW.length.toLocaleString() + ' รายการ · เลิกใช้ ' + AMI_ROWS.length.toLocaleString() + ' · อัปเดต ' + j.updated;
