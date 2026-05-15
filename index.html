@@ -895,12 +895,11 @@ function g(r,i){return(r&&r[i]!=null)?String(r[i]).trim():'';}
 function escHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function escJs(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n').replace(/\r/g,'');}
 function zoneVal(r){const z=g(r,8);return z==='1'||z==='2'?z:'ไม่ระบุ';}
-function looksLikeLine(v){v=String(v||'').trim();return !!v && !/^\d{6,}$/.test(v) && (/สาย|line/i.test(v) || v.length<=20);}
 function captureLineColumn(rows){
   (rows||[]).forEach(function(r){
     if(!r || r._line) return;
     var line=g(r,17);
-    if(looksLikeLine(line)) r._line=line;
+    if(line) r._line=line;
     var locate=g(r,41);
     if(locate) r._locate=locate;
   });
@@ -908,8 +907,7 @@ function captureLineColumn(rows){
 }
 function lineVal(r){
   if(r && r._line) return String(r._line).trim();
-  var line=g(r,17);
-  return looksLikeLine(line) ? line : '';
+  return '';
 }
 function locateVal(r){return r && r._locate ? String(r._locate).trim() : g(r,41);}
 function rv(r,i){return i==='line'?lineVal(r):g(r,i);}
