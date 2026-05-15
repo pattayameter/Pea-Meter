@@ -134,6 +134,8 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 .mfv{font-size:12px;color:var(--t)}
 .mfv.mono{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal)}
 .mfv.mru{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--amber);font-weight:500}
+.meter-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:7px}
+.meter-row-label{display:none}
 .full{grid-column:1/-1}
 .glink{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:var(--bluebg);border:1px solid var(--blue);border-radius:var(--r);color:var(--blue);font-size:13px;text-decoration:none;font-weight:500;margin-top:4px}
 
@@ -179,6 +181,7 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
   .image-viewer{padding:8px}
   .image-viewer-box{height:94vh}
   .image-viewer-open{display:none}
+  .meter-grid{grid-template-columns:1fr 1fr}
 }
 
 /* MAP */
@@ -1734,14 +1737,14 @@ function openMo(idx){
       </div>
     </div>
     <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
-      <div class="mgrid">
+      <div class="meter-grid">
         <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${newPeaVal(r)||'—'}</div></div>
-        <div class="mf"><div class="mfl">ขนาด</div><div class="mfv">${newSizeVal(r)||'—'}</div></div>
-        <div class="mf"><div class="mfl">รุ่น</div><div class="mfv">${newModelVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาดใหม่</div><div class="mfv">${newSizeVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">รุ่นใหม่</div><div class="mfv">${newModelVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">หน่วยใหม่</div><div class="mfv mono">${newUnitVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">มิเตอร์เก่า</div><div class="mfv mono">${oldPeaVal(r)||'—'}</div></div>
-        <div class="mf"><div class="mfl">ขนาด</div><div class="mfv">${oldSizeVal(r)||'—'}</div></div>
-        <div class="mf"><div class="mfl">รุ่น</div><div class="mfv">${oldModelVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาดเก่า</div><div class="mfv">${oldSizeVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">รุ่นเก่า</div><div class="mfv">${oldModelVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">หน่วยเก่า</div><div class="mfv mono">${oldUnitVal(r)||'—'}</div></div>
       </div>
     </div>
