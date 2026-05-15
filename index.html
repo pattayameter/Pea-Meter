@@ -1769,6 +1769,12 @@ function openMo(idx){
   document.getElementById('mo').classList.add('on');
 }
 function closeMo(e){if(!e||e.target.id==='mo'){document.getElementById('mo').classList.remove('on');document.getElementById('mbox').classList.remove('with-images');}}
+function openMoBySeq(seq){
+  const r=(RAW||[]).find(row=>g(row,0)===String(seq));
+  if(!r)return;
+  filtered=[r];
+  openMo(0);
+}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeImageViewer();closeMo();closeGuidePdf();}});
 
 // ── PENDING ──
@@ -2414,11 +2420,10 @@ function renderSearchInsights(){
   function dailyTable(rows){
     if(!rows.length) return '<div class="summary-section-title">📋 รายการงานของวันที่เลือก</div><div class="tw"><div class="empty">ไม่มีรายการงานในวันนี้</div></div>';
     var body=rows.map(function(r){
-      var idx=(window.RAW||[]).indexOf(r);
-      return '<tr data-seq="'+esc(r[0])+'" class="' + (isQueued(r)?'print-selected':'') + '" onclick="openMo('+idx+')">'+
+      return '<tr data-seq="'+esc(r[0])+'" class="' + (isQueued(r)?'print-selected':'') + '" onclick="openMoBySeq(\''+escJs(r[0])+'\')">'+
         queueCell(r)+
         '<td class="mono">'+esc(r[0])+'</td>'+
-        '<td><b>'+esc(r[2]||'-')+'</b><div class="cell-addr">'+esc(r[1]||'-')+'</div></td>'+
+        '<td><b>'+esc(r[2]||'-')+'</b><div class="cell-addr">'+esc(fmtDate(r[1])||'-')+'</div></td>'+
         '<td>'+esc(r[3]||'-')+'</td>'+
         '<td class="mono" style="color:var(--teal)">'+esc(r[4]||'-')+'</td>'+
         '<td>'+esc(r[5]||'-')+'</td>'+
