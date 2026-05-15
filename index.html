@@ -909,6 +909,17 @@ function lineVal(r){
 }
 function locateVal(r){return r && r._locate ? String(r._locate).trim() : g(r,41);}
 function rv(r,i){return i==='line'?lineVal(r):g(r,i);}
+function sheetExtraVal(r,key,fallbackIdx){
+  return r && r._sheetExtra && r._sheetExtra[key] ? String(r._sheetExtra[key]).trim() : g(r,fallbackIdx);
+}
+function newPeaVal(r){return sheetExtraVal(r,'newPea',4);}
+function newSizeVal(r){return sheetExtraVal(r,'newSize',5);}
+function newUnitVal(r){return sheetExtraVal(r,'newUnit',-1);}
+function newModelVal(r){return sheetExtraVal(r,'newModel',6);}
+function oldPeaVal(r){return sheetExtraVal(r,'oldPea',7);}
+function oldSizeVal(r){return sheetExtraVal(r,'oldSize',5);}
+function oldUnitVal(r){return sheetExtraVal(r,'oldUnit',-1);}
+function oldModelVal(r){return sheetExtraVal(r,'oldModel',6);}
 function phoneVal(r){
   var raw=g(r,15);
   var digits=raw.replace(/\D/g,'');
@@ -1724,10 +1735,14 @@ function openMo(idx){
     </div>
     <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
       <div class="mgrid">
-        <div class="mf full"><div class="mfl">มิเตอร์ใหม่ (PEA)</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${g(r,4)||'—'}</div></div>
-        <div class="mf full"><div class="mfl">มิเตอร์เก่า (PEA)</div><div class="mfv mono">${g(r,7)||'—'}</div></div>
-        <div class="mf"><div class="mfl">รุ่นมิเตอร์</div><div class="mfv">${g(r,6)||'—'}</div></div>
-        <div class="mf"><div class="mfl">ขนาด / Phase</div><div class="mfv">${g(r,5)||'—'}</div></div>
+        <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="font-size:14px;color:var(--teal)">${newPeaVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาด</div><div class="mfv">${newSizeVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">รุ่น</div><div class="mfv">${newModelVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">หน่วยใหม่</div><div class="mfv mono">${newUnitVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">มิเตอร์เก่า</div><div class="mfv mono">${oldPeaVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">ขนาด</div><div class="mfv">${oldSizeVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">รุ่น</div><div class="mfv">${oldModelVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">หน่วยเก่า</div><div class="mfv mono">${oldUnitVal(r)||'—'}</div></div>
       </div>
     </div>
     <div class="msec"><div class="msect">ที่อยู่และการติดต่อ</div>
@@ -2183,7 +2198,18 @@ function loadWorkExtraMap(){
           if(!seq)return;
           const line=sheetCell(c[17]);
           const locate=sheetCell(c[41]);
-          map[seq]={line,locate};
+          map[seq]={
+            line,
+            locate,
+            newPea: sheetCell(c[7]),
+            newSize: sheetCell(c[8]),
+            newUnit: sheetCell(c[9]),
+            newModel: sheetCell(c[10]),
+            oldPea: sheetCell(c[11]),
+            oldSize: sheetCell(c[12]),
+            oldUnit: sheetCell(c[13]),
+            oldModel: sheetCell(c[14])
+          };
         });
         done();resolve(map);
       }catch(e){done();reject(e);}
@@ -2202,6 +2228,7 @@ async function attachWorkExtraFields(rows){
       if(!extra)return;
       r._line=extra.line || '';
       r._locate=extra.locate || '';
+      r._sheetExtra=extra;
     });
     return Object.keys(extraMap).length;
   }catch(e){
