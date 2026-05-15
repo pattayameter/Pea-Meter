@@ -915,6 +915,17 @@ function phoneVal(r){
   if(digits.length===9 && digits.charAt(0)!=='0') return '0'+digits;
   return raw;
 }
+function mruVal(r){
+  var raw=g(r,16);
+  if(!raw)return '';
+  var prefix=(raw.match(/^[A-Za-z]+/)||['HPTY'])[0].toUpperCase();
+  var nums=raw.slice(prefix.length).match(/\d+/g)||raw.match(/\d+/g)||[];
+  if(!nums.length)return prefix+raw.replace(/^[A-Za-z]+/,'');
+  var first=String(nums[0]).padStart(4,'0');
+  if(nums.length<2)return prefix+first;
+  var second=String(nums[1]).padStart(6,'0');
+  return prefix+first+'-'+second;
+}
 function cleanZones(rows){
   (rows||[]).forEach(function(r){
     if(r)r[8]=zoneVal(r);
@@ -1593,7 +1604,7 @@ function openAmiMo(i){
     '<div class="mh"><div class="mt">⚡ '+(g(r,13)||'เลิกใช้ปกติ')+'</div><button class="mc" onclick="closeMo()">×</button></div>'+
     '<div class="msec"><div class="msect">สถานะ</div><span class="badge '+bc(g(r,11))+'">'+bl(g(r,11))+'</span></div>'+
     '<div class="msec"><div class="msect">รหัสงาน</div><div class="mgrid">'+
-      '<div class="mf"><div class="mfl">HPTY</div><div class="mfv mono">'+(g(r,16)||'—')+'</div></div>'+
+      '<div class="mf"><div class="mfl">HPTY</div><div class="mfv mono">'+(mruVal(r)||'—')+'</div></div>'+
       '<div class="mf"><div class="mfl">เลขหลัง 6 ตัว</div><div class="mfv mono">'+(g(r,18)||'—')+'</div></div>'+
       '<div class="mf"><div class="mfl">มิเตอร์ PEA</div><div class="mfv mono">'+(g(r,4)||'—')+'</div></div>'+
       '<div class="mf"><div class="mfl">เลข INST</div><div class="mfv mono">'+(g(r,7)||'—')+'</div></div>'+
@@ -1640,7 +1651,7 @@ function buildJobText(r){
     'ประเภทงาน: '+(g(r,3)||'-'),
     'ชื่อ: '+(g(r,13)||'-'),
     'มิเตอร์ใหม่: '+(g(r,4)||'-'),
-    'MRU: '+(g(r,16)||'-'),
+    'MRU: '+(mruVal(r)||'-'),
     'ขนาด: '+(g(r,5)||'-'),
     'สาย: '+(lineVal(r)||'-'),
     'Locate: '+(locateVal(r)||'-'),
@@ -1689,7 +1700,7 @@ function openMo(idx){
   const s=g(r,11),name=g(r,13)||'(ไม่มีชื่อ)';
   const lat=g(r,9),lng=g(r,10);
   const hasGps=lat&&lng&&lat!='0'&&lng!='0';
-  const mru=g(r,16),requestNo=g(r,17),rmk=g(r,12);
+  const mru=mruVal(r),requestNo=g(r,17),rmk=g(r,12);
   document.getElementById('mbox').innerHTML=`
     <div class="mh">
       <div class="mt">${name}</div>
@@ -2511,7 +2522,7 @@ function filterMap(){
     const statusRing = s.includes('ปิด') ? '#4ade80' : s.includes('ค้าง') ? '#f87171' : '#fbbf24';
     const icon = mkZoneIcon(zoneColor, statusRing);
     const name=g(r,13)||'ไม่ระบุ';
-    const mru=g(r,16);
+    const mru=mruVal(r);
     const addr=g(r,14);
     const addrShort=addr.length>50?addr.slice(0,48)+'…':addr;
 
@@ -2548,7 +2559,7 @@ function doPrint() {
   var s = g(r,11), name = g(r,13) || '(ไม่มีชื่อ)';
   var lat = g(r,9), lng = g(r,10);
   var hasGps = lat && lng && lat !== '0' && lng !== '0';
-  var mru = g(r,16) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
+  var mru = mruVal(r) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
   var bc2 = s.indexOf('ปิด')>=0 ? 'green' : s.indexOf('รอ')>=0 ? 'amber' : 'gray';
   var bt  = s.indexOf('ปิด')>=0 ? 'ปิดงาน' : s.indexOf('รอ')>=0 ? 'รอดำเนินการ' : (s||'ไม่ระบุ');
   var now = fmtPrintNow();
@@ -2649,7 +2660,7 @@ function queueEsc(v) {
 function queueLabel(r) {
   var seq = g(r,0) || '-';
   var req = g(r,17);
-  var mru = g(r,16);
+  var mru = mruVal(r);
   var main = req || g(r,4) || seq;
   return '<span class="pq-chip" title="ลำดับ ' + queueEsc(seq) + (req ? ' · คำร้อง ' + queueEsc(req) : '') + (mru ? ' · MRU ' + queueEsc(mru) : '') + '"><b>#' + queueEsc(seq) + '</b><span>' + queueEsc(main) + '</span>' + (mru ? '<span>· ' + queueEsc(mru) + '</span>' : '') + '</span>';
 }
@@ -2681,7 +2692,7 @@ function buildSlip(r, corner) {
   var s = g(r,11), name = g(r,13) || '(ไม่มีชื่อ)';
   var lat = g(r,9), lng = g(r,10);
   var hasGps = lat && lng && lat !== '0' && lng !== '0';
-  var mru = g(r,16) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
+  var mru = mruVal(r) || '', requestNo = g(r,17) || '', rmk = g(r,12) || '';
   var bc2 = s.indexOf('ปิด')>=0 ? 'green' : s.indexOf('รอ')>=0 ? 'amber' : 'gray';
   var bt  = s.indexOf('ปิด')>=0 ? 'ปิดงาน' : s.indexOf('รอ')>=0 ? 'รอดำเนินการ' : (s||'ไม่ระบุ');
   var now = fmtPrintNow();
@@ -2844,6 +2855,7 @@ function askPassword(btn) {
 </script>
 </body>
 </html>
+
 
 
 
