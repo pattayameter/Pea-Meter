@@ -897,9 +897,7 @@ function escJs(v){return String(v==null?'':v).replace(/\\/g,'\\\\').replace(/'/g
 function zoneVal(r){const z=g(r,8);return z==='1'||z==='2'?z:'ไม่ระบุ';}
 function captureLineColumn(rows){
   (rows||[]).forEach(function(r){
-    if(!r || r._line) return;
-    var line=g(r,17);
-    if(line) r._line=line;
+    if(!r) return;
     var locate=g(r,41);
     if(locate) r._locate=locate;
   });
@@ -2190,8 +2188,8 @@ async function attachWorkExtraFields(rows){
     rows.forEach(r=>{
       const extra=extraMap[g(r,0)];
       if(!extra)return;
-      if(extra.line)r._line=extra.line;
-      if(extra.locate)r._locate=extra.locate;
+      r._line=extra.line || '';
+      r._locate=extra.locate || '';
     });
     return Object.keys(extraMap).length;
   }catch(e){
