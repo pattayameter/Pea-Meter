@@ -17,6 +17,16 @@
   --teal:#2dd4bf;--purple:#a78bfa;
   --r:10px;--rs:6px;
 }
+body.light-mode{
+  --bg:#f5f7fb;--bg2:#ffffff;--bg3:#eef2f7;--bg4:#e2e8f0;
+  --b:rgba(15,23,42,0.09);--b2:rgba(15,23,42,0.16);
+  --t:#162033;--t2:#566174;--t3:#8a94a6;
+  --blue:#2563eb;--bluebg:rgba(37,99,235,0.10);
+  --green:#15803d;--greenbg:rgba(21,128,61,0.10);
+  --amber:#b45309;--amberbg:rgba(180,83,9,0.11);
+  --red:#dc2626;--redbg:rgba(220,38,38,0.10);
+  --teal:#0f766e;--purple:#7c3aed;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:14px}
 
@@ -28,6 +38,8 @@ body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(
 .hsp{flex:1}
 .sync{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green)}
+.theme-icon-btn{width:34px;height:34px;border:1px solid var(--b2);background:var(--bg3);color:var(--t);border-radius:50%;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;flex-shrink:0}
+.theme-icon-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--bluebg)}
 
 /* TABS */
 .nav{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--b);background:var(--bg2);overflow-x:auto;scrollbar-width:none}
@@ -39,6 +51,24 @@ body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(
 /* MAIN */
 .main{padding:16px 20px;max-width:1300px;margin:0 auto}
 .pg{display:none}.pg.on{display:block}
+
+/* SIMPLE WORKFLOW */
+.simple-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--bg2);border:1px solid var(--b);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.simple-title{font-size:15px;font-weight:600;color:var(--t);line-height:1.45}
+.simple-sub{font-size:12px;color:var(--t2);line-height:1.6;margin-top:2px}
+.simple-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.simple-btn{border:1px solid var(--b2);background:var(--bg3);color:var(--t);border-radius:var(--rs);padding:9px 12px;font-size:12px;font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;white-space:nowrap}
+.simple-btn:hover{border-color:var(--blue);color:var(--blue)}
+.simple-btn.primary{background:var(--bluebg);border-color:rgba(74,158,255,.45);color:var(--blue);font-weight:600}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.quick-card{border:1px solid var(--b);background:var(--bg2);border-radius:var(--r);padding:13px 14px;text-align:left;color:var(--t);font-family:'IBM Plex Sans Thai',sans-serif;cursor:pointer;transition:.15s}
+.quick-card:hover{border-color:var(--blue);background:var(--bg3);transform:translateY(-1px)}
+.quick-card-title{font-size:13px;font-weight:600;margin-bottom:3px}
+.quick-card-note{font-size:11px;color:var(--t2);line-height:1.5}
+.search-hint{font-size:11px;color:var(--t3);line-height:1.6;margin:-4px 0 10px}
+body.easy-mode .advanced-panel{display:none!important}
+body.easy-mode .main{max-width:1050px}
+body.easy-mode .quick-card-note,body.easy-mode .simple-sub{font-size:12px;color:var(--t2)}
 
 /* METRICS */
 .mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
@@ -494,6 +524,7 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
   <span class="htitle">บางละมุง · ชลบุรี</span>
   <div class="hsp"></div>
   <div class="sync"><div class="dot" id="syncDot"></div><span id="syncLbl">กำลังโหลด...</span></div>
+  <button class="theme-icon-btn" id="themeModeBtn" onclick="toggleThemeMode()" aria-label="เปลี่ยนเป็นโหมดสว่าง" title="โหมดสว่าง">☀</button>
 </div>
 
 <div class="nav">
@@ -614,9 +645,41 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
 
 <!-- ══ SEARCH PAGE ══ -->
 <div class="pg on" id="pg-search">
+  <div class="simple-toolbar">
+    <div>
+      <div class="simple-title">เริ่มจากค้นหางาน แล้วกดรายการเพื่อดูรายละเอียด</div>
+      <div class="simple-sub">เหมาะกับงานหน้าเคาน์เตอร์และงานภาคสนาม: ค้นหา เปิดแผนที่ โทร คัดลอก หรือพิมพ์ใบงาน</div>
+    </div>
+    <div class="simple-actions">
+      <button class="simple-btn primary" id="easyModeBtn" onclick="toggleEasyMode()">โหมดง่าย</button>
+      <button class="simple-btn" onclick="resetSearchView()">ล้างการค้นหา</button>
+    </div>
+  </div>
+  <div class="quick-actions">
+    <button class="quick-card" onclick="focusMainSearch()">
+      <div class="quick-card-title">ค้นหางาน</div>
+      <div class="quick-card-note">พิมพ์เลขคำร้อง ชื่อ มิเตอร์ PEA ที่อยู่ หรือ MRU</div>
+    </button>
+    <button class="quick-card" onclick="quickSetFilter('pending')">
+      <div class="quick-card-title">งานรอดำเนินการ</div>
+      <div class="quick-card-note">ดูเฉพาะรายการที่ยังไม่ปิดงาน</div>
+    </button>
+    <button class="quick-card" onclick="quickSetFilter('amiMeter')">
+      <div class="quick-card-title">มิเตอร์ AMI</div>
+      <div class="quick-card-note">เลขมิเตอร์ PEA ขึ้นต้น 62</div>
+    </button>
+    <button class="quick-card" onclick="quickGo('pending')">
+      <div class="quick-card-title">งานค้างทั้งหมด</div>
+      <div class="quick-card-note">แยกตามผู้ปฏิบัติและประเภทงาน</div>
+    </button>
+    <button class="quick-card" onclick="quickGo('map')">
+      <div class="quick-card-title">เปิดแผนที่</div>
+      <div class="quick-card-note">ดูจุดงานตามพิกัดและ Zone</div>
+    </button>
+  </div>
   <div class="mets" id="mets"></div>
-  <div id="searchInsights"></div>
-  <div class="help-box">
+  <div id="searchInsights" class="advanced-panel"></div>
+  <div class="help-box advanced-panel">
     <div class="help-title">🔍 ค้นหางานจ่ายมิเตอร์</div>
     <div class="help-desc">ใช้หน้านี้เพื่อตรวจสอบรายการงานจ่ายมิเตอร์ ดูสถานะ ประเภทงาน พื้นที่ Zone และรายละเอียดผู้ใช้ไฟ กดที่รายการในตารางเพื่อดูข้อมูลเพิ่มเติมหรือพิมพ์ใบงาน</div>
     <div class="help-tags">
@@ -624,7 +687,7 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
     </div>
   </div>
 
-  <div class="info-grid">
+  <div class="info-grid advanced-panel">
     <div class="info-card">
       <h3>🏷️ ประเภทงานที่พบบ่อย</h3>
       <ul>
@@ -668,8 +731,11 @@ td{padding:9px 12px;font-size:12px;vertical-align:top}
       <option value="hasReq">มีเลขคำร้อง</option>
       <option value="noReq">ไม่มีเลขคำร้อง</option>
       <option value="debt">ค้างจ่าย</option>
+      <option value="amiMeter">มิเตอร์ AMI (PEA 62)</option>
+      <option value="normalMeter">มิเตอร์ปกติ</option>
     </select>
   </div>
+  <div class="search-hint">กด Enter ไม่จำเป็น ระบบค้นหาทันทีที่พิมพ์ ถ้าไม่พบงานให้ลองใช้เลขมิเตอร์หรือชื่อบางส่วน</div>
   <div class="ri" id="ri"></div>
   <div class="tw" id="tw"></div>
 </div>
@@ -925,6 +991,16 @@ function oldPeaVal(r){return sheetExtraVal(r,'oldPea',-1);}
 function oldSizeVal(r){return sheetExtraVal(r,'oldSize',-1);}
 function oldUnitVal(r){return sheetExtraVal(r,'oldUnit',-1);}
 function oldModelVal(r){return sheetExtraVal(r,'oldModel',-1);}
+function meterPeaKey(r){
+  return String(newPeaVal(r)||g(r,4)||'').trim().replace(/[^0-9A-Za-z]/g,'').toUpperCase();
+}
+function isAmiMeter(r){
+  var key=meterPeaKey(r);
+  return key.indexOf('62')===0 || key.indexOf('PEA62')===0;
+}
+function meterKindLabel(r){
+  return isAmiMeter(r) ? 'AMI' : 'ปกติ';
+}
 function phoneVal(r){
   var raw=g(r,15);
   var digits=raw.replace(/\D/g,'');
@@ -1435,6 +1511,8 @@ function passFieldFilter(r,f){
   if(f==='hasReq')return !!req;
   if(f==='noReq')return !req;
   if(f==='debt')return (remark+status).includes('ค้างจ่าย') || (remark+status).includes('ค้าง');
+  if(f==='amiMeter')return isAmiMeter(r);
+  if(f==='normalMeter')return !isAmiMeter(r);
   return true;
 }
 
@@ -1484,7 +1562,7 @@ function renderTable(){
       <td class="mono">${fmtDate(g(r,1))}</td>
       <td>${g(r,2)||'—'}</td>
       <td>${g(r,3)||'—'}</td>
-      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}<div class="cell-addr">${meterKindLabel(r)}</div></td>
       <td style="color:var(--t2)">${g(r,5)||'—'}</td>
       <td style="color:var(--t2)">${lineVal(r)||'—'}</td>
       <td style="color:var(--t2)">${locateVal(r)||'—'}</td>
@@ -1600,7 +1678,7 @@ function renderAmi(){
       '<td class="mono">'+fmtDate(g(r,1))+'</td>'+
       '<td>'+g(r,2)+'</td>'+
       '<td>'+g(r,3)+'</td>'+
-      '<td class="mono" style="color:var(--teal)">'+g(r,4)+'</td>'+
+      '<td class="mono" style="color:var(--teal)">'+g(r,4)+'<div class="cell-addr">'+meterKindLabel(r)+'</div></td>'+
       '<td>'+g(r,5)+'</td>'+
       '<td style="color:var(--t2)">'+g(r,8)+'</td>'+
       '<td><div class="cell-name">'+name+'</div>'+(addr?'<div class="cell-addr">'+addrShort+'</div>':'')+(sub?'<div class="cell-addr mono">'+sub+'</div>':'')+'</td>'+
@@ -1726,6 +1804,7 @@ function openMo(idx){
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
       <span class="badge ${bc(s)}">${bl(s)}</span>
       <span class="badge bgr">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Zone '+zoneVal(r)}</span>
+      <span class="badge bgr">มิเตอร์ ${meterKindLabel(r)}</span>
       ${g(r,3)?`<span class="badge bgr">${g(r,3)}</span>`:''}
     </div>
     ${(requestNo||mru)?`<div class="msec"><div class="msect">คำร้อง / MRU</div><div class="mgrid"><div class="mf"><div class="mfl">เลขที่คำร้อง</div><div class="mfv mono" style="color:var(--teal)">${requestNo||'—'}</div></div><div class="mf"><div class="mfl">รหัส MRU</div><div class="mfv mru">${mru||'—'}</div></div></div></div>`:''}
@@ -1740,7 +1819,7 @@ function openMo(idx){
     </div>
     <div class="msec"><div class="msect">ข้อมูลมิเตอร์</div>
       <div class="meter-grid">
-        <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="color:var(--teal)">${newPeaVal(r)||'—'}</div></div>
+        <div class="mf"><div class="mfl">มิเตอร์ใหม่</div><div class="mfv mono" style="color:var(--teal)">${newPeaVal(r)||'—'}</div><div class="cell-addr">ชนิด ${meterKindLabel(r)}</div></div>
         <div class="mf"><div class="mfl">ขนาดใหม่</div><div class="mfv">${newSizeVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">รุ่นใหม่</div><div class="mfv">${newModelVal(r)||'—'}</div></div>
         <div class="mf"><div class="mfl">หน่วยใหม่</div><div class="mfv mono">${newUnitVal(r)||'—'}</div></div>
@@ -1816,7 +1895,7 @@ function renderPending(){
       <td class="mono">${fmtDate(g(r,1))}</td>
       <td>${g(r,2)||'—'}</td>
       <td>${g(r,3)||'—'}</td>
-      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}<div class="cell-addr">${meterKindLabel(r)}</div></td>
       <td style="color:var(--t2)">${g(r,5)||'—'}</td>
       <td style="text-align:center;color:var(--t2)">${zoneVal(r)==='ไม่ระบุ'?'ไม่ระบุ':'Z'+zoneVal(r)}</td>
       <td><div class="cell-name">${name}</div>${addr?`<div class="cell-addr">${addrShort}</div>`:''}</td>
@@ -1941,7 +2020,7 @@ function renderDaily(){
       <td class="mono" style="color:var(--t3)">${g(r,0)}</td>
       <td>${g(r,2)||'—'}</td>
       <td>${g(r,3)||'—'}</td>
-      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}</td>
+      <td class="mono" style="color:var(--teal)">${g(r,4)||'—'}<div class="cell-addr">${meterKindLabel(r)}</div></td>
       <td style="color:var(--t2)">${g(r,5)||'—'}</td>
       <td><div class="cell-name">${name}</div>${addr?`<div class="cell-addr">${addr.length>50?addr.slice(0,48)+'…':addr}</div>`:''}</td>
       <td><span class="badge ${bc(s)}">${bl(s)}</span></td>
@@ -2097,13 +2176,86 @@ function showPg(name,btn){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('pg-'+name).classList.add('on');
-  btn.classList.add('on');
+  if(btn) btn.classList.add('on');
   if(name==='guide')renderGuidePdfs();
   if(name==='dash')buildDash();
 }
 
+function findTabButton(name){
+  return Array.from(document.querySelectorAll('.tab')).find(function(btn){
+    return (btn.getAttribute('onclick')||'').indexOf("'" + name + "'") >= 0;
+  });
+}
+function quickGo(name){
+  showPg(name, findTabButton(name));
+  if(name==='map') initMap();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function focusMainSearch(){
+  quickGo('search');
+  var q=document.getElementById('qi');
+  if(q) q.focus();
+}
+function quickSetFilter(kind){
+  quickGo('search');
+  var status=document.getElementById('fst');
+  var field=document.getElementById('ff');
+  if(status) status.value='';
+  if(field) field.value='';
+  if(kind==='pending' && status) status.value='รอ';
+  if(kind==='noCoord' && field) field.value='noCoord';
+  if(kind==='debt' && field) field.value='debt';
+  if(kind==='amiMeter' && field) field.value='amiMeter';
+  if(kind==='normalMeter' && field) field.value='normalMeter';
+  doSearch();
+}
+function resetSearchView(){
+  quickGo('search');
+  ['qi','ft','fst','fz','ff'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  sortC=0;
+  sortAsc=false;
+  curPg=1;
+  doSearch();
+  var q=document.getElementById('qi');
+  if(q) q.focus();
+}
+function applyEasyMode(){
+  var on=localStorage.getItem('pea_easy_mode')==='1';
+  document.body.classList.toggle('easy-mode', on);
+  var btn=document.getElementById('easyModeBtn');
+  if(btn) btn.textContent=on ? 'โหมดปกติ' : 'โหมดง่าย';
+}
+function toggleEasyMode(){
+  var on=!document.body.classList.contains('easy-mode');
+  localStorage.setItem('pea_easy_mode', on ? '1' : '0');
+  applyEasyMode();
+}
+function applyThemeMode(){
+  var mode=localStorage.getItem('pea_theme_mode')||'dark';
+  var light=mode==='light';
+  document.body.classList.toggle('light-mode', light);
+  var btn=document.getElementById('themeModeBtn');
+  if(btn) {
+    btn.textContent=light ? '☾' : '☀';
+    btn.setAttribute('aria-label', light ? 'เปลี่ยนเป็นโหมดมืด' : 'เปลี่ยนเป็นโหมดสว่าง');
+    btn.setAttribute('title', light ? 'โหมดมืด' : 'โหมดสว่าง');
+  }
+}
+function toggleThemeMode(){
+  var light=!document.body.classList.contains('light-mode');
+  localStorage.setItem('pea_theme_mode', light ? 'light' : 'dark');
+  applyThemeMode();
+}
+applyEasyMode();
+applyThemeMode();
+
 // INIT
 function initAll() {
+  applyEasyMode();
+  applyThemeMode();
   RAW = prepareRows(RAW);
   AMI_ROWS = prepareRows(AMI_ROWS);
   buildMets(document.getElementById('mets'), RAW);
